@@ -1,0 +1,7 @@
+= textmagic
+
+Description goes here.
+
+== Copyright
+
+Copyright (c) 2009 Vladimir Bobes Tuzinsky. See LICENSE for details.
