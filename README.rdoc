@@ -1,6 +1,6 @@
 = textmagic
 
-Description goes here.
+Documentation will come soon.
 
 == Copyright
 
