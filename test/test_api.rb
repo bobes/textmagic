@@ -2,15 +2,6 @@ require 'test_helper'
 
 class APITest < Test::Unit::TestCase
 
-  def prepare_api(command, raw_response, options = {})
-    FakeWeb.allow_net_connect = false
-
-    @username, @password = random_string, random_string
-    uri = build_uri(command, @username, @password, options)
-    FakeWeb.register_uri(:get, uri, :string => raw_response)
-    TextMagic::API.new(@username, @password)
-  end
-
   context 'Initialization' do
 
     should 'require username and password' do
