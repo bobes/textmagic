@@ -24,7 +24,7 @@ and will use it for all commands.
 
 To retrieve your account's balance, run:
 
-  api.account['balance']
+  api.account.balance
 
 To send a text message, run:
 
