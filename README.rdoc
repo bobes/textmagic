@@ -22,7 +22,7 @@ To create an API instance, run:
   api = TextMagic::API.new(username, password)
 
 with your credentials. Created instance will remember the username and password
-and will use it for all commands.
+and will use them in all requests to the SMS gateway.
 
 === Account balance
 
@@ -78,7 +78,7 @@ To receive all available replies, run:
   replies.first.text
   # => 'Hi Fred!'
 
-To prevent receiving old messages, supply +last_retrieved_id+ argument:
+To prevent receiving old replies again, supply +last_retrieved_id+ argument:
 
   replies = api.receive('1780826').messages
   # => []
