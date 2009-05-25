@@ -81,7 +81,9 @@ module TextMagic
     #  api.message_status('314159', '271828')
     #  api.message_status(['314159', '271828'])
     def message_status(*ids)
-      Executor.execute('message_status', @username, @password, :ids => ids.flatten.join(','))
+      ids.flatten!
+      raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
+      Executor.execute('message_status', @username, @password, :ids => ids.join(','))
     end
 
     # Executes a receive command and returns a hash with unread messages
@@ -108,7 +110,9 @@ module TextMagic
     #  api.delete_reply('314159', '271828')
     #  api.delete_reply(['314159', '271828'])
     def delete_reply(*ids)
-      Executor.execute('delete_reply', @username, @password, :ids => ids.flatten.join(','))
+      ids.flatten!
+      raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
+      Executor.execute('delete_reply', @username, @password, :ids => ids.join(','))
     end
   end
 end

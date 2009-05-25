@@ -131,9 +131,14 @@ class APITest < Test::Unit::TestCase
       @api.message_status(*ids)
     end
 
+    should 'not call execute and should raise an exception if no ids are specified' do
+      TextMagic::API::Executor.expects(:execute).never
+      lambda { @api.message_status }.should raise_error(TextMagic::API::Error)
+    end
+
     should 'return a hash with message ids as keys' do
       TextMagic::API::Executor.expects(:execute).returns({ '8659912' => {} })
-      response = @api.message_status
+      response = @api.message_status(random_string)
       response['8659912'].should == {}
     end
   end
@@ -187,6 +192,11 @@ class APITest < Test::Unit::TestCase
       ids = Array.new(3) { random_string }
       TextMagic::API::Executor.expects(:execute).with('delete_reply', @username, @password, :ids => ids.join(','))
       @api.delete_reply(*ids)
+    end
+
+    should 'not call execute and should raise an exception if no ids are specified' do
+      TextMagic::API::Executor.expects(:execute).never
+      lambda { @api.delete_reply }.should raise_error(TextMagic::API::Error)
     end
 
     should 'return a hash with deleted ids' do
