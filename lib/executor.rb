@@ -24,8 +24,9 @@ module TextMagic
           raise TextMagic::API::Error.new(5, 'Invalid username & password combination')
         end
         options.merge!(:username => username, :password => password, :cmd => command)
+        options.delete_if { |key, value| key.nil? || key.to_s.blank? || value.nil? || value.to_s.blank? }
         response = self.get('/api', :query => options, :format => :json)
-        raise Error.new(response) if response['error_code']
+        raise Error.new(response) if response && response['error_code']
         response
       end
     end

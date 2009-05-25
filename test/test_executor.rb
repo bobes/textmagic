@@ -40,6 +40,18 @@ class ExecutorTest < Test::Unit::TestCase
       TextMagic::API::Executor.execute(@command, @username, @password, @options)
     end
 
+    should 'not send parameters with empty keys' do
+      options_with_empty_values = @options.merge(nil => random_string, '' => random_string)
+      TextMagic::API::Executor.expects(:get).with('/api', :query => @options, :format => :json)
+      TextMagic::API::Executor.execute(@command, @username, @password, options_with_empty_values)
+    end
+
+    should 'not send parameters with empty values' do
+      options_with_empty_values = @options.merge(random_string => nil, random_string => '')
+      TextMagic::API::Executor.expects(:get).with('/api', :query => @options, :format => :json)
+      TextMagic::API::Executor.execute(@command, @username, @password, options_with_empty_values)
+    end
+
     should 'raise an error if the response contains error_code' do
       response = "{error_code:#{1 + rand(10)}}"
       FakeWeb.register_uri(:get, @uri, :string => response)
