@@ -51,7 +51,7 @@ module TextMagic
     #  api.send(text, phone1, phone2, :max_length => 2)
     #  api.send(text, [phone1, phone2])
     def send(text, *args)
-      raise Error.new(1, 'Messages text is empty') if text.nil? || text.blank?
+      raise Error.new(1, 'Message text is empty') if text.nil? || text.blank?
       options = args.last.is_a?(Hash) ? args.pop : {}
       unicode = API.is_unicode(text)
       options[:unicode] = case options[:unicode]
