@@ -6,6 +6,11 @@ module TextMagic
 
       attr_reader :code, :message
 
+      # Creates an instance of TextMagic::API::Error. Error code and message
+      # can be supplied as arguments or as a response hash.
+      #
+      #  TextMagic::API::Error.new(code, message)
+      #  TextMagic::API::Error.new('error_code' => code, 'error_message' => message)
       def initialize(*args)
         if args.first.is_a?(Hash)
           @code, @message = args.first['error_code'], args.first['error_message']

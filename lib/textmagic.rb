@@ -7,5 +7,5 @@ require 'api'
 require 'executor'
 require 'error'
 
-module TextMagic
+module TextMagic #:nodoc:
 end
