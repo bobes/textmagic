@@ -32,17 +32,13 @@ class ResponseTest < Test::Unit::TestCase
       @response.extend TextMagic::API::Response::Send
     end
 
-    should 'allow access to inverted message_id hash' do
-      @response.message_id_hash.should == @message_id.invert
-    end
-
     should 'allow access to message_ids array' do
       @response.message_ids.should == ['141421', '173205']
     end
 
     should 'allow access to message_id for a given phone number' do
-      @response.message_id('999314159265').should == '141421'
-      @response.message_id('999271828182').should == '173205'
+      @response['999314159265'].should == '141421'
+      @response['999271828182'].should == '173205'
     end
 
     should 'allow access to sent_text' do
@@ -142,6 +138,10 @@ class ResponseTest < Test::Unit::TestCase
 
     should 'allow access to messages array' do
       @response.messages.should == @messages
+    end
+
+    should 'allow access to message_ids array' do
+      @response.message_ids.should == ['141421', '173205']
     end
 
     should 'allow access to message_id for all messages' do

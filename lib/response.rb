@@ -58,12 +58,12 @@ module TextMagic
       module Send #:nodoc: all
 
         def self.extended(base)
-          return unless base.is_a?(Hash)
-          base['message_id_hash'] = base.delete('message_id').invert if base['message_id']
-          base['message_ids'] = base['message_id_hash'].values.sort if base['message_id_hash']
+          return unless base.is_a?(Hash) && base['message_id']
+          base['message_ids'] = base['message_id'].keys.sort
+          base.merge! base.delete('message_id').invert
         end
 
-        %w(message_id_hash message_ids sent_text parts_count).each do |method|
+        %w(message_ids sent_text parts_count).each do |method|
           module_eval <<-EOS
           def #{method}
             self['#{method}']
@@ -72,7 +72,7 @@ module TextMagic
         end
 
         def message_id(phone = nil)
-          phone ? message_id_hash[phone] : message_ids.first
+          phone ? self[phone] : self['message_ids'].first
         end
       end
 
@@ -104,13 +104,14 @@ module TextMagic
 
         def self.extended(base)
           return unless base.is_a?(Hash) && base['messages']
+          base['message_ids'] = base['messages'].collect { |message| message['message_id'] }.sort
           base['messages'].each do |message|
             message['timestamp'] = Time.at(message['timestamp'].to_i) if message['timestamp']
             message.extend Message
           end
         end
 
-        %w(messages unread).each do |method|
+        %w(messages message_ids unread).each do |method|
           module_eval <<-EOS, __FILE__, __LINE__ + 1
           def #{method}
             self['#{method}']

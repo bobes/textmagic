@@ -111,12 +111,12 @@ class APITest < Test::Unit::TestCase
       response.is_a?(TextMagic::API::Response::Send).should == true
     end
 
-    should 'return a hash with message_id_hash, message_ids, sent_text and parts_count values' do
+    should 'return a hash with message_ids, sent_text and parts_count values' do
       message_id = random_string
       TextMagic::API::Executor.expects(:execute).returns({ 'message_id' => { message_id => @phone }, 'sent_text' => @text, 'parts_count' => 1 })
       response = @api.send(@text, @phone)
-      response['message_id_hash'].should == { @phone => message_id }
       response['message_ids'].should == [message_id]
+      response['sent_text'].should == @text
       response['parts_count'].should == 1
     end
   end
@@ -126,12 +126,15 @@ class APITest < Test::Unit::TestCase
     setup do
       @username, @password = random_string, random_string
       @api = TextMagic::API.new(@username, @password)
+      @id = random_string
+      @status = { 'text' => 'Hi Vilma', 'status' => 'd' , 'created_time' => Time.now.to_i, 'reply_number' => '447624800500', 'completed_time' => nil, 'credits_cost' => 0.5 }
+      @response = { @id => @status }
+      TextMagic::API::Executor.stubs(:execute)
     end
 
     should 'call Executor execute with correct arguments' do
-      id = random_string
-      TextMagic::API::Executor.expects(:execute).with('message_status', @username, @password, :ids => id)
-      @api.message_status(id)
+      TextMagic::API::Executor.expects(:execute).with('message_status', @username, @password, :ids => @id).returns(@response)
+      @api.message_status(@id)
     end
 
     should 'join ids supplied as array' do
@@ -151,17 +154,43 @@ class APITest < Test::Unit::TestCase
       lambda { @api.message_status }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash extended with TextMagic::API::Response::MessageStatus' do
-      TextMagic::API::Executor.expects(:execute).returns({ '8659912' => {} })
-      response = @api.message_status(random_string)
+    should 'return a hash extended with TextMagic::API::Response::MessageStatus for an array of ids' do
+      TextMagic::API::Executor.expects(:execute).returns(@response)
+      response = @api.message_status([@id])
       response.class.should == Hash
       response.is_a?(TextMagic::API::Response::MessageStatus).should == true
     end
 
-    should 'return a hash with message ids as keys' do
-      TextMagic::API::Executor.expects(:execute).returns({ '8659912' => {} })
-      response = @api.message_status(random_string)
-      response['8659912'].should == {}
+    should 'return a hash with message ids as keys for an array of ids' do
+      TextMagic::API::Executor.expects(:execute).returns(@response)
+      response = @api.message_status([@id])
+      response[@id].should == @status
+    end
+
+    should 'return a hash extended with TextMagic::API::Response::MessageStatus for a list of ids' do
+      TextMagic::API::Executor.expects(:execute).returns(@response)
+      response = @api.message_status(@id, random_string)
+      response.class.should == Hash
+      response.is_a?(TextMagic::API::Response::MessageStatus).should == true
+    end
+
+    should 'return a hash with message ids as keys for a list of ids' do
+      TextMagic::API::Executor.expects(:execute).returns(@response)
+      response = @api.message_status(@id, random_string)
+      response[@id].should == @status
+    end
+
+    should 'return a hash extended with TextMagic::API::Response::MessageStatus::Status for a single id' do
+      TextMagic::API::Executor.expects(:execute).returns(@response)
+      response = @api.message_status(@id)
+      response.class.should == Hash
+      response.is_a?(TextMagic::API::Response::MessageStatus::Status).should == true
+    end
+
+    should 'return a hash with message ids as keys for a single id' do
+      TextMagic::API::Executor.expects(:execute).returns(@response)
+      response = @api.message_status(@id)
+      response.should == @status
     end
   end
 

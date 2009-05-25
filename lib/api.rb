@@ -88,6 +88,7 @@ module TextMagic
       raise Error.new(9, 'Invalid phone number format') unless API.validate_phones(phones)
       response = Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
       response.extend(TextMagic::API::Response::Send)
+      response
     end
 
     # Executes a message_status command and returns a hash with states of
@@ -116,10 +117,12 @@ module TextMagic
     #  response['141421'].created_time
     #  # => Fri May 22 10:10:18 +0200 2009
     def message_status(*ids)
+      single = ids.size == 1 && ids.first.is_a?(String)
       ids.flatten!
       raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
       response = Executor.execute('message_status', @username, @password, :ids => ids.join(','))
       response.extend(TextMagic::API::Response::MessageStatus)
+      single ? response[ids.first] : response
     end
 
     # Executes a receive command and returns a hash with unread messages
