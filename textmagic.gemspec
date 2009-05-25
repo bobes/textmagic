@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{textmagic}
-  s.version = "0.1.0"
+  s.version = "0.2.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Vladimir Bobes Tuzinsky"]
@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
      "lib/charset.rb",
      "lib/error.rb",
      "lib/executor.rb",
+     "lib/response.rb",
      "lib/textmagic.rb",
      "lib/validation.rb",
      "test/test_api.rb",
@@ -30,7 +31,7 @@ Gem::Specification.new do |s|
      "test/test_error.rb",
      "test/test_executor.rb",
      "test/test_helper.rb",
-     "test/test_textmagic.rb",
+     "test/test_response.rb",
      "test/test_validation.rb",
      "textmagic.gemspec"
   ]
@@ -47,7 +48,7 @@ Gem::Specification.new do |s|
      "test/test_error.rb",
      "test/test_executor.rb",
      "test/test_helper.rb",
-     "test/test_textmagic.rb",
+     "test/test_response.rb",
      "test/test_validation.rb"
   ]
 
