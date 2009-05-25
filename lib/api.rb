@@ -51,9 +51,20 @@ module TextMagic
     #  api.send(text, phone1, phone2, :max_length => 2)
     #  api.send(text, [phone1, phone2])
     def send(text, *args)
+      raise Error.new(1, 'Messages text is empty') if text.nil? || text.blank?
       options = args.last.is_a?(Hash) ? args.pop : {}
-      phones = args.flatten.join(',')
-      Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones))
+      unicode = API.is_unicode(text)
+      options[:unicode] = case options[:unicode]
+      when 1, true: 1
+      when 0, false: 0
+      when nil: unicode ? 1 : 0
+      else raise Error.new(10, "Wrong parameter value #{options[:unicode]} for parameter unicode")
+      end
+      raise Error.new(6, 'Message was not sent') if unicode && options[:unicode] == 0
+      raise Error.new(7, 'Very long message') unless API.validate_text_length(text, unicode)
+      phones = args.flatten
+      raise Error.new(9, 'Wrong phone number format') unless API.validate_phones(phones)
+      Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
     end
 
     # Executes a message_status command and returns a hash with states of

@@ -27,7 +27,7 @@ class ExecutorTest < Test::Unit::TestCase
       }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash with values in the response' do
+    should 'return a hash with values from the response' do
       hash = random_hash
       FakeWeb.register_uri(:get, @uri, :string => hash.to_json)
       response = TextMagic::API::Executor.execute(@command, @username, @password, @options)

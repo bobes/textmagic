@@ -5,7 +5,7 @@ class APITest < Test::Unit::TestCase
   context 'Initialization' do
 
     should 'require username and password' do
-      lambda { TextMagic::API.new }.should raise_error
+      lambda { TextMagic::API.new }.should raise_error(ArgumentError)
       TextMagic::API.new(random_string, random_string)
     end
   end
@@ -36,23 +36,64 @@ class APITest < Test::Unit::TestCase
       @username, @password = random_string, random_string
       @text, @phone = random_string, random_phone
       @api = TextMagic::API.new(@username, @password)
+      TextMagic::API::Executor.stubs(:execute)
     end
 
     should 'call Executor execute with correct arguments' do
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone)
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0)
       @api.send(@text, @phone)
     end
 
     should 'join multiple phone numbers supplied as an array' do
       phones = Array.new(3) { random_phone }
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','))
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','), :unicode => 0)
       @api.send(@text, phones)
     end
 
     should 'join multiple phone numbers supplied as arguments' do
       phones = Array.new(3) { random_phone }
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','))
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','), :unicode => 0)
       @api.send(@text, *phones)
+    end
+
+    should 'replace true with 1 for unicode' do
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 1)
+      @api.send(@text, @phone, :unicode => true)
+    end
+
+    should 'set unicode value to 0 if it is not set to by user and text contains only characters from GSM 03.38 charset' do
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0).times(2)
+      @api.send(@text, @phone)
+      @api.send(@text, @phone, :unicode => false)
+    end
+
+    should 'raise an error if unicode is set to 0 and text contains characters outside of GSM 03.38 charset' do
+      text = 'Вильма Привет'
+      lambda { @api.send(text, @phone, :unicode => false) }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'raise an error if unicode value is not valid' do
+      lambda { @api.send(@text, @phone, :unicode => 2 + rand(10)) }.should raise_error(TextMagic::API::Error)
+      lambda { @api.send(@text, @phone, :unicode => random_string) }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'raise an error if no phone numbers are specified' do
+      lambda { @api.send(@text) }.should raise_error(TextMagic::API::Error)
+      lambda { @api.send(@text, []) }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'raise an error if format of any of the specified phone numbers is invalid' do
+      TextMagic::API.expects(:validate_phones).returns(false)
+      lambda { @api.send(@text, random_string) }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'raise an error if text is empty' do
+      lambda { @api.send('', @phone) }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'raise an error if text is too long' do
+      TextMagic::API.expects(:validate_text_length).returns(false)
+      lambda { @api.send(@text, @phone) }.should raise_error(TextMagic::API::Error)
     end
 
     should 'return a hash with message_id, sent_text and parts_count' do
