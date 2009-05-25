@@ -1,10 +1,19 @@
 = TextMagic
 
+Code[http://github.com/bobes/textmagic]
+|
+RDoc[http://textmagic.rubyforge.org]
+|
+Forum[http://groups.google.com/group/textmagic-api]
+|
+Issues[http://github.com/bobes/textmagic/issues]
+
 +textmagic+ gem is a Ruby interface to the TextMagic's Bulk SMS Gateway.
 It can be used to send SMS messages and receive replies, check statuses
 of sent messages and retrieve account balance.
 You need to have a valid TextMagic[http://www.textmagic.com] account to use this gem. Sign up at
 http://www.textmagic.com to get one.
+
 
 == Installation
 
@@ -90,6 +99,19 @@ After you retrieve replies, you can delete them from server by running:
   message_ids = api.receive.message_ids
   # => ['141421', '1780826']
   api.delete_reply '141421', '1780826'
+
+
+== Links
+
+The code is hosted at GitHub[http://github.com/bobes/textmagic] and released to
+RubyForge[http://rubyforge.org/projects/textmagic].
+You can find documentation for the gem at project's homepage[http://textmagic.rubyforge.org]
+at RubyForge.
+
+For general information on TextMagic's Bulk SMS Gateway, visit the
+official API documentation[http://api.textmagic.com] or
+Google group[http://groups.google.com/group/textmagic-api].
+
 
 == Copyright
 
