@@ -19,8 +19,8 @@ class ResponseTest < Test::Unit::TestCase
 
     setup do
       @message_id = {
-        '1414213' => '314159265358',
-        '1732050' => '271828182845'
+        '141421' => '999314159265',
+        '173205' => '999271828182'
       }
       @text = random_string
       @parts_count = rand(10)
@@ -33,16 +33,16 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should 'allow access to inverted message_id hash' do
-      @response.message_id.should == @message_id.invert
+      @response.message_id_hash.should == @message_id.invert
     end
 
     should 'allow access to message_ids array' do
-      @response.message_ids.should == ['1414213', '1732050']
+      @response.message_ids.should == ['141421', '173205']
     end
 
     should 'allow access to message_id for a given phone number' do
-      @response.message_id('314159265358').should == '1414213'
-      @response.message_id('271828182845').should == '1732050'
+      @response.message_id('999314159265').should == '141421'
+      @response.message_id('999271828182').should == '173205'
     end
 
     should 'allow access to sent_text' do
@@ -63,7 +63,7 @@ class ResponseTest < Test::Unit::TestCase
       @completed_time = (Time.now - 20).to_i
       @credits_cost = 0.01 * rand(300)
       @response = {
-        '8659912' => {
+        '141421' => {
           'text' => @text,
           'status' => 'd',
           'created_time' => @created_time,
@@ -71,7 +71,7 @@ class ResponseTest < Test::Unit::TestCase
           'completed_time' => @completed_time,
           'credits_cost' => @credits_cost
         },
-        '8659914' => {
+        '173205' => {
           'text' => 'test',
           'status' => 'r',
           'created_time' => '1242979839',
@@ -83,34 +83,34 @@ class ResponseTest < Test::Unit::TestCase
       @response.extend TextMagic::API::Response::MessageStatus
     end
 
-    should 'allow access to text for a given message_id' do
-      @response.text('8659912').should == @text
-      @response.text('8659914').should == 'test'
+    should 'allow access to text for all statuses' do
+      @response['141421'].text.should == @text
+      @response['173205'].text.should == 'test'
     end
 
     should 'allow access to status for a given message_id' do
-      @response.status('8659912').should == 'd'
-      @response.status('8659914').should == 'r'
+      @response['141421'].status.should == 'd'
+      @response['173205'].status.should == 'r'
     end
 
     should 'allow access to reply_number for a given message_id' do
-      @response.reply_number('8659912').should == @reply_number
-      @response.reply_number('8659914').should == '447624800500'
+      @response['141421'].reply_number.should == @reply_number
+      @response['173205'].reply_number.should == '447624800500'
     end
 
     should 'allow access to created_time for a given message_id' do
-      @response.created_time('8659912').should == Time.at(@created_time)
-      @response.created_time('8659914').should == Time.at(1242979839)
+      @response['141421'].created_time.should == Time.at(@created_time)
+      @response['173205'].created_time.should == Time.at(1242979839)
     end
 
     should 'allow access to completed_time for a given message_id' do
-      @response.completed_time('8659912').should == Time.at(@completed_time)
-      @response.completed_time('8659914').should == nil
+      @response['141421'].completed_time.should == Time.at(@completed_time)
+      @response['173205'].completed_time.should == nil
     end
 
     should 'allow access to credits_cost for a given message_id' do
-      @response.credits_cost('8659912').should be_close(@credits_cost, 1e-10)
-      @response.credits_cost('8659914').should be_close(0.5, 1e-10)
+      @response['141421'].credits_cost.should be_close(@credits_cost, 1e-10)
+      @response['173205'].credits_cost.should be_close(0.5, 1e-10)
     end
   end
 
@@ -120,15 +120,15 @@ class ResponseTest < Test::Unit::TestCase
       @timestamp = (Time.now - 30).to_i
       @message1 = {
         'timestamp' => @timestamp,
-        'from' => '314159265358',
+        'from' => '999314159265',
         'text' => 'Hi Fred',
-        'message_id' => '1780826'
+        'message_id' => '141421'
       }
       @message2 = {
         'timestamp' => 1243244148,
-        'from' => '271828182845',
+        'from' => '999271828182',
         'text' => 'Hello buddy',
-        'message_id' => '1782274'
+        'message_id' => '173205'
       }
       @messages = [@message1, @message2]
       @unread = rand(1e4)
@@ -140,35 +140,31 @@ class ResponseTest < Test::Unit::TestCase
       @response.unread.should == @unread
     end
 
-    should 'allow access to messages hash' do
-      @response.messages.should == { '1780826' => @message1, '1782274' => @message2 }
+    should 'allow access to messages array' do
+      @response.messages.should == @messages
     end
 
-    should 'allow access to message ids' do
-      @response.message_ids.should == ['1780826', '1782274']
+    should 'allow access to message_id for all messages' do
+      @response.messages.first.message_id.should == '141421'
     end
 
-    should 'allow access to message hash for a given message id' do
-      @response.message('1780826').should == @message1
+    should 'allow access to timestamp for all messages' do
+      @response.messages.first.timestamp.should == Time.at(@timestamp)
     end
 
-    should 'allow access to timestamp for a given message id' do
-      @response.timestamp('1780826').should == Time.at(@timestamp)
+    should 'allow access to from for all messages' do
+      @response.messages.first.from.should == '999314159265'
     end
 
-    should 'allow access to from for a given message id' do
-      @response.from('1780826').should == '314159265358'
-    end
-
-    should 'allow access to text for a given message id' do
-      @response.text('1780826').should == 'Hi Fred'
+    should 'allow access to text for all messages' do
+      @response.messages.first.text.should == 'Hi Fred'
     end
   end
 
   context 'DeleteReply response' do
 
     setup do
-      @ids = ['1414213', '1780826']
+      @ids = ['141421', '1780826']
       @response = { 'deleted' => @ids }
       @response.extend TextMagic::API::Response::DeleteReply
     end

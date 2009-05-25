@@ -5,7 +5,7 @@ module TextMagic
     class Executor
 
       include HTTParty
-      base_uri "https://www.textmagic.com/app"
+      base_uri "http://www.textmagic.com/app"
 
       # Executes a command by sending a request to the TextMagic's HTTP
       # gateway. This is a low-level generic method used by methods in

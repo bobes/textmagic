@@ -29,7 +29,7 @@ end
 
 def build_uri(command, username, password, options = {})
   options.merge!(:cmd => command, :username => username, :password => password)
-  uri = "https://www.textmagic.com:443/app/api?"
+  uri = "http://www.textmagic.com/app/api?"
   uri << options.collect { |key, value| "#{key}=#{value}"}.join('&')
 end
 

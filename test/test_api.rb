@@ -13,6 +13,7 @@ class APITest < Test::Unit::TestCase
   context 'Account command' do
 
     setup do
+      @balance = 0.01 * rand(1e4)
       @username, @password = random_string, random_string
       @api = TextMagic::API.new(@username, @password)
     end
@@ -22,11 +23,17 @@ class APITest < Test::Unit::TestCase
       @api.account
     end
 
-    should 'return a hash with account balance value' do
-      TextMagic::API::Executor.expects(:execute).returns({ 'balance' => '3.14' })
+    should 'return a hash extended with TextMagic::API::Response::Account' do
+      TextMagic::API::Executor.expects(:execute).returns({ 'balance' => @balance.to_s })
       response = @api.account
       response.class.should == Hash
-      response.balance.should == 3.14
+      response.is_a?(TextMagic::API::Response::Account).should == true
+    end
+
+    should 'return a hash with balance value' do
+      TextMagic::API::Executor.expects(:execute).returns({ 'balance' => @balance.to_s })
+      response = @api.account
+      response['balance'].should be_close(@balance, 1e-10)
     end
   end
 
@@ -96,14 +103,21 @@ class APITest < Test::Unit::TestCase
       lambda { @api.send(@text, @phone) }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash with message_id, sent_text and parts_count' do
+    should 'return a hash extended with TextMagic::API::Response::Send' do
       message_id = random_string
       TextMagic::API::Executor.expects(:execute).returns({ 'message_id' => { message_id => @phone }, 'sent_text' => @text, 'parts_count' => 1 })
       response = @api.send(@text, @phone)
       response.class.should == Hash
-      response.message_id.should == { @phone => message_id }
-      response.sent_text.should == @text
-      response.parts_count.should == 1
+      response.is_a?(TextMagic::API::Response::Send).should == true
+    end
+
+    should 'return a hash with message_id_hash, message_ids, sent_text and parts_count values' do
+      message_id = random_string
+      TextMagic::API::Executor.expects(:execute).returns({ 'message_id' => { message_id => @phone }, 'sent_text' => @text, 'parts_count' => 1 })
+      response = @api.send(@text, @phone)
+      response['message_id_hash'].should == { @phone => message_id }
+      response['message_ids'].should == [message_id]
+      response['parts_count'].should == 1
     end
   end
 
@@ -137,6 +151,13 @@ class APITest < Test::Unit::TestCase
       lambda { @api.message_status }.should raise_error(TextMagic::API::Error)
     end
 
+    should 'return a hash extended with TextMagic::API::Response::MessageStatus' do
+      TextMagic::API::Executor.expects(:execute).returns({ '8659912' => {} })
+      response = @api.message_status(random_string)
+      response.class.should == Hash
+      response.is_a?(TextMagic::API::Response::MessageStatus).should == true
+    end
+
     should 'return a hash with message ids as keys' do
       TextMagic::API::Executor.expects(:execute).returns({ '8659912' => {} })
       response = @api.message_status(random_string)
@@ -162,7 +183,14 @@ class APITest < Test::Unit::TestCase
       @api.receive(last_retrieved_id)
     end
 
-    should 'return a hash with messages and number of unread messages' do
+    should 'return a hash extended with TextMagic::API::Response::Receive' do
+      TextMagic::API::Executor.expects(:execute).returns({ 'messages' => [], 'unread' => 0 })
+      response = @api.receive
+      response.class.should == Hash
+      response.is_a?(TextMagic::API::Response::Receive).should == true
+    end
+
+    should 'return a hash with unread and messages values' do
       TextMagic::API::Executor.expects(:execute).returns({ 'messages' => [], 'unread' => 0 })
       response = @api.receive
       response['unread'].should == 0
@@ -200,7 +228,15 @@ class APITest < Test::Unit::TestCase
       lambda { @api.delete_reply }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash with deleted ids' do
+    should 'return a hash extended with TextMagic::API::Response::DeleteReply' do
+      ids = Array.new(3) { random_string }
+      TextMagic::API::Executor.expects(:execute).returns({ 'deleted' => ids })
+      response = @api.delete_reply(ids)
+      response.class.should == Hash
+      response.is_a?(TextMagic::API::Response::DeleteReply).should == true
+    end
+
+    should 'return a hash with deleted value' do
       ids = Array.new(3) { random_string }
       TextMagic::API::Executor.expects(:execute).returns({ 'deleted' => ids })
       response = @api.delete_reply(ids)
@@ -208,34 +244,3 @@ class APITest < Test::Unit::TestCase
     end
   end
 end
-
-__END__
-
-Example responses
-
-account:
-{"balance":"100"}
-
-send:
-{"message_id":{"1234567":"444444123456"},"sent_text":"test","parts_count":1}
-
-message_status:
-{"8659912":{"text":"test","status":"d","created_time":"1242979818","reply_number":"447624800500","completed_time":null,"credits_cost":"0.5"},"8659914":{"text":"test","status":"d","created_time":"1242979839","reply_number":"447624800500","completed_time":null,"credits_cost":"0.5"}}
-
-receive (empty):
-{"messages":[],"unread":0}
-
-empty message:
-{"error_code":1,"error_message":"Messages text is empty"}
-
-insufficient parameters:
-{"error_code":4,"error_message":"Insufficient parameters"}
-
-invalid credentials:
-{"error_code":5,"error_message":"Invalid username & password combination"}
-
-invalid phone number format:
-{"error_code":9,"error_message":"Wrong phone number format"}
-
-invalid message_id:
-{"error_code":14,"error_message":"Message with id 8659913 does not exist"}
