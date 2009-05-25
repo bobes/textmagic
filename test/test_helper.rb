@@ -14,7 +14,7 @@ class Test::Unit::TestCase
 end
 
 def random_string(legth = 5)
-  rand(36 ** legth).to_s(36)
+  Array.new(legth) { rand(36).to_s(36) }.join
 end
 
 def random_phone
