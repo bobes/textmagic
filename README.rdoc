@@ -93,4 +93,4 @@ After you retrieve replies, you can delete them from server by running:
 
 == Copyright
 
-Copyright (c) 2009 Vladimir Bobes Tuzinsky. See LICENSE for details.
+Copyright (c) 2009 Vladimír Bobeš Tužinský. See LICENSE for details.

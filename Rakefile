@@ -8,7 +8,7 @@ begin
     gem.summary = %Q{Ruby interface to the TextMagic's SMS gateway}
     gem.email = "vladimir.tuzinsky@gmail.com"
     gem.homepage = "http://github.com/bobes/textmagic"
-    gem.authors = ["Vladimir Bobes Tuzinsky"]
+    gem.authors = ["Vladimír Bobeš Tužinský"]
     gem.rubyforge_project = "textmagic"
   end
 
