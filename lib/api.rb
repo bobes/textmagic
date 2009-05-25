@@ -20,19 +20,24 @@ module TextMagic
 
     # Executes an account command and returns a hash with account's balance
     # if successful, otherwise it raises a TextMagic::API::Error.
+    # The returned hash will be extended with custom reader methods defined in module
+    # TextMagic::API::Response::Account.
     #
     # Example usage:
     #
     #  api.account
-    #  # => { 'balance' => 3.14 }
+    #  # => { 'balance' => '3.14' }
+    #  api.account.balance
+    #  # => 3.14
     def account
       response = Executor.execute('account', @username, @password)
-      response['balance'] = response['balance'].to_f
-      response
+      response.extend(TextMagic::API::Response::Account)
     end
 
     # Executes a send command and returns a hash with message ids, sent text and
     # number of parts if successful, otherwise it raises a TextMagic::API::Error.
+    # The returned hash will be extended with custom reader methods defined in module
+    # TextMagic::API::Response::Send.
     #
     # This method accepts any positive number of phone numbers and an additional
     # options hash.
@@ -45,11 +50,23 @@ module TextMagic
     #
     # Example usage:
     #
-    #  api.send('Hi Vilma', '441234567890')
-    #  # => { 'message_id' => { '314159' => '441234567890' }, 'sent_text' => 'Hi Vilma', 'parts_count' => 1 }
+    #  api.send('Hi Vilma', '314159265358')
+    #  # => { 'message_id' => { '1414213' => '314159265358', '1732050' => '271828182845' }, 'sent_text' => 'Hi Vilma', 'parts_count' => 1 }
     #  api.send(text, phone, :unicode => true)
     #  api.send(text, phone1, phone2, :max_length => 2)
     #  api.send(text, [phone1, phone2])
+    #
+    # Using custom accessors:
+    #
+    #  response = api.send('Hi Vilma', '314159265358', '271828182845')
+    #  response.message_ids
+    #  # => ['1414213', '1732050']
+    #  response.message_id
+    #  # => { '314159265358' => '1414213', '271828182845' => '1732050' }
+    #  response.message_id('314159265358')
+    #  # => '1414213'
+    #  response.parts_count
+    #  # => 1
     def send(text, *args)
       raise Error.new(1, 'Message text is empty') if text.nil? || text.blank?
       options = args.last.is_a?(Hash) ? args.pop : {}
@@ -64,41 +81,75 @@ module TextMagic
       raise Error.new(7, 'Message too long') unless API.validate_text_length(text, unicode)
       phones = args.flatten
       raise Error.new(9, 'Invalid phone number format') unless API.validate_phones(phones)
-      Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
+      response = Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
+      response.extend(TextMagic::API::Response::Send)
     end
 
     # Executes a message_status command and returns a hash with states of
     # messages for specified ids if successful, otherwise it raises a
     # TextMagic::API::Error.
+    # The returned hash will be extended with custom reader methods defined in module
+    # TextMagic::API::Response::MessageStatus.
     #
     # This method accepts any positive number of ids specified as an array
     # or as a list of arguments
     #
     # Example usage:
     #
-    #  api.message_status('314159')
-    #  # => { '314159' => { 'text' => 'Hi Vilma', 'status' => 'd' , 'created_time' => '1242979818', 'reply_number' => '447624800500', 'completed_time': null, 'credits_cost': '0.5' } }
-    #  api.message_status('314159', '271828')
-    #  api.message_status(['314159', '271828'])
+    #  api.message_status('1414213')
+    #  # => { '1414213' => { 'text' => 'Hi Vilma', 'status' => 'd' , 'created_time' => '1242979818', 'reply_number' => '447624800500', 'completed_time': null, 'credits_cost': '0.5' } }
+    #  api.message_status('1414213', '1732050')
+    #  api.message_status(['1414213', '1732050'])
+    #
+    # Using custom accessors:
+    #
+    #  response = api.message_status('1414213', '1732050')
+    #  response.text('1414213')
+    #  # => 'Hi Vilma'
+    #  response.status('1414213')
+    #  # => 'd'
+    #  response.created_time('1414213')
+    #  # => Fri May 22 10:10:18 +0200 2009
     def message_status(*ids)
       ids.flatten!
       raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
-      Executor.execute('message_status', @username, @password, :ids => ids.join(','))
+      response = Executor.execute('message_status', @username, @password, :ids => ids.join(','))
+      response.extend(TextMagic::API::Response::MessageStatus)
     end
 
     # Executes a receive command and returns a hash with unread messages
     # if successful, otherwise it raises a TextMagic::API::Error.
+    # The returned hash will be extended with custom reader methods defined in module
+    # TextMagic::API::Response::Receive.
+    #
+    # This method accepts an optional +last_retrieved_id+ value.
     #
     # Example usage:
     #
     #  api.receive
-    #  # => { 'messages' => [{ 'message_id' => '1414213', 'from' => '441234567890', 'timestamp' => 1242987175, 'text' => 'Hi Fred!' }], 'unread' => 0 }
+    #  # => { 'messages' => [{ 'message_id' => '1414213', 'from' => '314159265358', 'timestamp' => 1242987175, 'text' => 'Hi Fred!' }], 'unread' => 0 }
+    #  api.receive '1414213'
+    #
+    # Using custom accessors:
+    #
+    #  response = api.receive
+    #  response.messages
+    #  # => { '1414213' => { 'timestamp' => 1242987175, 'from' => '314159265358', 'text' => 'Hi Fred', 'message_id' => '1414213' } }
+    #  response.messages
+    #  # => { '1414213' => { 'timestamp' => 1242987175, 'from' => '314159265358', 'text' => 'Hi Fred', 'message_id' => '1414213' } }
+    #  response.message_ids
+    #  # => ['1414213']
+    #  response.message('1414213')
+    #  # => { 'timestamp' => 1242987175, 'from' => '314159265358', 'text' => 'Hi Fred', 'message_id' => '1414213' }
     def receive(last_retrieved_id = nil)
-      Executor.execute('receive', @username, @password, :last_retrieved_id => last_retrieved_id)
+      response = Executor.execute('receive', @username, @password, :last_retrieved_id => last_retrieved_id)
+      response.extend(TextMagic::API::Response::Receive)
     end
 
     # Executes a delete_reply command and returns a hash with a list of deleted
     # message ids if successful, otherwise it raises a TextMagic::API::Error.
+    # The returned hash will be extended with custom reader methods defined in module
+    # TextMagic::API::Response::DeleteReply.
     #
     # This method accepts any positive number of ids specified as an array
     # or as a list of arguments.
@@ -109,10 +160,17 @@ module TextMagic
     #  # => { 'deleted' => ['314159'] }
     #  api.delete_reply('314159', '271828')
     #  api.delete_reply(['314159', '271828'])
+    #
+    # Using custom accessors:
+    #
+    #  response = api.delete_reply('314159', '271828')
+    #  response.deleted
+    #  # => ['314159', '271828']
     def delete_reply(*ids)
       ids.flatten!
       raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
-      Executor.execute('delete_reply', @username, @password, :ids => ids.join(','))
+      response = Executor.execute('delete_reply', @username, @password, :ids => ids.join(','))
+      response.extend(TextMagic::API::Response::DeleteReply)
     end
   end
 end

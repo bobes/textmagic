@@ -22,11 +22,11 @@ class APITest < Test::Unit::TestCase
       @api.account
     end
 
-    should 'return a hash with numeric balance value' do
+    should 'return a hash with account balance value' do
       TextMagic::API::Executor.expects(:execute).returns({ 'balance' => '3.14' })
       response = @api.account
       response.class.should == Hash
-      response['balance'].should == 3.14
+      response.balance.should == 3.14
     end
   end
 
@@ -100,9 +100,10 @@ class APITest < Test::Unit::TestCase
       message_id = random_string
       TextMagic::API::Executor.expects(:execute).returns({ 'message_id' => { message_id => @phone }, 'sent_text' => @text, 'parts_count' => 1 })
       response = @api.send(@text, @phone)
-      response['message_id'].should == { message_id => @phone }
-      response['sent_text'].should == @text
-      response['parts_count'].should == 1
+      response.class.should == Hash
+      response.message_id.should == { @phone => message_id }
+      response.sent_text.should == @text
+      response.parts_count.should == 1
     end
   end
 
@@ -202,8 +203,8 @@ class APITest < Test::Unit::TestCase
     should 'return a hash with deleted ids' do
       ids = Array.new(3) { random_string }
       TextMagic::API::Executor.expects(:execute).returns({ 'deleted' => ids })
-      response = @api.receive
-      response['deleted'].should == ids
+      response = @api.delete_reply(ids)
+      response.deleted.should == ids
     end
   end
 end

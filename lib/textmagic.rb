@@ -4,6 +4,7 @@ require 'httparty'
 require 'charset'
 require 'validation'
 require 'api'
+require 'response'
 require 'executor'
 require 'error'
 
