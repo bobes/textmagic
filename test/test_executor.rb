@@ -13,6 +13,27 @@ class ExecutorTest < Test::Unit::TestCase
       @uri = build_uri(@command, @username, @password, @options)
     end
 
+    should 'not send HTTP request without command' do
+      TextMagic::API::Executor.expects(:get).never
+      lambda {
+        TextMagic::API::Executor.execute(nil, @username, @password, @options)
+      }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'not send HTTP request without username' do
+      TextMagic::API::Executor.expects(:get).never
+      lambda {
+        TextMagic::API::Executor.execute(@command, nil, @password, @options)
+      }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'not send HTTP request without password' do
+      TextMagic::API::Executor.expects(:get).never
+      lambda {
+        TextMagic::API::Executor.execute(@command, @username, nil, @options)
+      }.should raise_error(TextMagic::API::Error)
+    end
+
     should 'send a GET request to proper uri' do
       response = random_string
       FakeWeb.register_uri(:get, @uri, :string => response)
