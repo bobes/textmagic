@@ -91,8 +91,8 @@ module TextMagic
     #
     #  api.receive
     #  # => { 'messages' => [{ 'message_id' => '1414213', 'from' => '441234567890', 'timestamp' => 1242987175, 'text' => 'Hi Fred!' }], 'unread' => 0 }
-    def receive
-      Executor.execute('receive', @username, @password)
+    def receive(last_retrieved_id = nil)
+      Executor.execute('receive', @username, @password, :last_retrieved_id => last_retrieved_id)
     end
 
     # Executes a delete_reply command and returns a hash with a list of deleted

@@ -146,8 +146,14 @@ class APITest < Test::Unit::TestCase
     end
 
     should 'call Executor execute with correct arguments' do
-      TextMagic::API::Executor.expects(:execute).with('receive', @username, @password)
+      TextMagic::API::Executor.expects(:execute).with('receive', @username, @password, :last_retrieved_id => nil)
       @api.receive
+    end
+
+    should 'accept last_retrieved_id optional value' do
+      last_retrieved_id = rand(1e10)
+      TextMagic::API::Executor.expects(:execute).with('receive', @username, @password, :last_retrieved_id => last_retrieved_id)
+      @api.receive(last_retrieved_id)
     end
 
     should 'return a hash with messages and number of unread messages' do
