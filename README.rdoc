@@ -1,8 +1,10 @@
 = TextMagic
 
-TextMagic is a Ruby interface to the TextMagic's HTTP API. You need to have
-a valid TextMagic account to use this gem. Sign up at http://www.textmagic.com
-to get one.
++textmagic+ gem is a Ruby interface to the TextMagic's Bulk SMS Gateway.
+It can be used to send SMS messages and receive replies, check statuses
+of sent messages and retrieve account balance.
+You need to have a valid TextMagic[http://www.textmagic.com] account to use this gem. Sign up at
+http://www.textmagic.com to get one.
 
 == Installation
 
@@ -22,18 +24,72 @@ To create an API instance, run:
 with your credentials. Created instance will remember the username and password
 and will use it for all commands.
 
+=== Account balance
+
 To retrieve your account's balance, run:
 
   api.account.balance
+  # => 314.15
 
-To send a text message, run:
+=== Sending messages
 
-  api.send 'Hi Vilma!', '441234567890'
+To send a message to a single phone number, run:
+
+  api.send 'Hi Vilma!', '999314159265'
 
 You can even specify multiple phone numbers:
 
-  api.send 'Hi Vilma!', '314159265358', '271828182845'
+  api.send 'Hi everybody!', '999314159265', '999271828182'
 
+Unicode messages are supported as well:
+
+  api.send 'Вильма Привет!', '999314159265'
+
+Long messages will be split to up to 3 parts. If you want to limit maximum number
+of parts, you can specify an optional +max_length+ parameter:
+
+  api.send 'Very long message...', '999314159265', :max_length => 2
+
+=== Checking sent message status
+
+If you want to check sent message status, you have to use +message_id+
+returned in respose to +send+ command.
+
+  api.send('Hi Vilma!', '999314159265').message_id
+  # => '141421'
+  api.message_status('141421').status
+  # => 'd'
+
+You can also supply several message_ids, in which case you'll get a hash with
+message_ids as keys:
+
+  api.send('Hi Vilma!', '999314159265', '999271828182').message_ids
+  # => ['141421', '173205']
+  statuses = api.message_status('141421', '173205')
+  statuses['141421'].status
+  # => 'r'
+
+=== Receiving replies
+
+To receive all available replies, run:
+
+  replies = api.receive.messages
+  # => [{ 'timestamp' => Fri May 22 12:12:55 +0200 2009, 'from' => '999314159265', 'text' => 'Hi Fred!', 'message_id' => '1780826' }]
+  replies.first.text
+  # => 'Hi Fred!'
+
+To prevent receiving old messages, supply +last_retrieved_id+ argument:
+
+  replies = api.receive('1780826').messages
+  # => []
+
+=== Deleting retrieved replies
+
+After you retrieve replies, you can delete them from server by running:
+
+  message_ids = api.receive.message_ids
+  # => ['141421', '1780826']
+  api.delete_reply '141421', '1780826'
 
 == Copyright
 
