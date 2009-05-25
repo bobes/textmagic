@@ -60,10 +60,10 @@ module TextMagic
       when nil: unicode ? 1 : 0
       else raise Error.new(10, "Wrong parameter value #{options[:unicode]} for parameter unicode")
       end
-      raise Error.new(6, 'Message was not sent') if unicode && options[:unicode] == 0
-      raise Error.new(7, 'Very long message') unless API.validate_text_length(text, unicode)
+      raise Error.new(6, 'Message contains invalid characters') if unicode && options[:unicode] == 0
+      raise Error.new(7, 'Message too long') unless API.validate_text_length(text, unicode)
       phones = args.flatten
-      raise Error.new(9, 'Wrong phone number format') unless API.validate_phones(phones)
+      raise Error.new(9, 'Invalid phone number format') unless API.validate_phones(phones)
       Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
     end
 
