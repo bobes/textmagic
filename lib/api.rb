@@ -2,6 +2,9 @@ module TextMagic
 
   class API
 
+    extend Charset
+    extend Validation
+
     # Creates new API instance with specified credentials. These will be
     # used in all requests to the TextMagic's HTTP gateway done through
     # this instance. Multiple instances with different credentials can
@@ -30,11 +33,15 @@ module TextMagic
 
     # Executes a send command and returns a hash with message ids, sent text and
     # number of parts if successful, otherwise it raises a TextMagic::API::Error.
-    # This method accepts a single phone number as well as a list of multiple
-    # phone numbers and additional options.
-    # The optional parameters you can specify in the options argument are:
-    # * unicode: accepted values are true, false, 0 and 1, defaults to 0
-    # * max_length: accepted values are nil, 1, 2 and 3, defaults to nil
+    #
+    # This method accepts any positive number of phone numbers and an additional
+    # options hash.
+    #
+    # The optional parameters you can specify in the options hash are:
+    # * +unicode+: accepted values are true, false, 0 and 1
+    # * +max_length+: accepted values are nil, 1, 2 and 3, defaults to nil
+    # If not specified, the method will determine the unicode value based on the
+    # characters in the text.
     #
     # Example usage:
     #
@@ -52,6 +59,7 @@ module TextMagic
     # Executes a message_status command and returns a hash with states of
     # messages for specified ids if successful, otherwise it raises a
     # TextMagic::API::Error.
+    #
     # This method accepts any positive number of ids specified as an array
     # or as a list of arguments
     #
@@ -78,6 +86,7 @@ module TextMagic
 
     # Executes a delete_reply command and returns a hash with a list of deleted
     # message ids if successful, otherwise it raises a TextMagic::API::Error.
+    #
     # This method accepts any positive number of ids specified as an array
     # or as a list of arguments.
     #
