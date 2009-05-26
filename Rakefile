@@ -10,7 +10,10 @@ begin
     gem.homepage = "http://github.com/bobes/textmagic"
     gem.authors = ["Vladimir Bobes Tuzinsky"]
     gem.rubyforge_project = "textmagic"
-    gem.add_dependency = ["httparty", ">= 0.4.3"]
+    gem.add_runtime_dependency "httparty", ">= 0.4.3"
+    gem.add_development_dependency "mocha", ">= 0.9.5"
+    gem.add_development_dependency "fakeweb", ">= 1.2.2"
+    gem.add_development_dependency "jeremymcanally-matchy", ">= 0.1.0"
   end
 
   Jeweler::RubyforgeTasks.new
