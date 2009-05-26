@@ -106,8 +106,8 @@ After you retrieve replies, you can delete them from server by running:
 == Links
 
 For general information on TextMagic's Bulk SMS Gateway, visit the
-official API documentation[http://api.textmagic.com] or
-Google group[http://groups.google.com/group/textmagic-api].
+official {API documentation}[http://api.textmagic.com] or
+{Google group}[http://groups.google.com/group/textmagic-api].
 
 
 == Copyright
