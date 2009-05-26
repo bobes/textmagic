@@ -5,11 +5,12 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "textmagic"
-    gem.summary = %Q{Ruby interface to the TextMagic's SMS gateway}
+    gem.summary = %Q{Ruby interface to the TextMagic's Bulk SMS Gateway}
     gem.email = "vladimir.tuzinsky@gmail.com"
     gem.homepage = "http://github.com/bobes/textmagic"
     gem.authors = ["Vladimir Bobes Tuzinsky"]
     gem.rubyforge_project = "textmagic"
+    gem.add_dependency = ["httparty", ">= 0.4.3"]
   end
 
   Jeweler::RubyforgeTasks.new
