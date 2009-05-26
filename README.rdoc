@@ -2,9 +2,7 @@
 
 Code[http://github.com/bobes/textmagic]
 |
-RDoc[http://textmagic.rubyforge.org]
-|
-Forum[http://groups.google.com/group/textmagic-api]
+RDoc[http://bobes.github.com/textmagic]
 |
 Issues[http://github.com/bobes/textmagic/issues]
 
@@ -106,11 +104,6 @@ After you retrieve replies, you can delete them from server by running:
 
 
 == Links
-
-The code is hosted at GitHub[http://github.com/bobes/textmagic] and released to
-RubyForge[http://rubyforge.org/projects/textmagic].
-You can find documentation for the gem at project's homepage[http://textmagic.rubyforge.org]
-at RubyForge.
 
 For general information on TextMagic's Bulk SMS Gateway, visit the
 official API documentation[http://api.textmagic.com] or
