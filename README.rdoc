@@ -26,6 +26,10 @@ Use +sudo+ if required by your system.
 
 == Basic usage
 
+Start with requiring +textmagic+ library:
+
+  require 'textmagic'
+
 To create an API instance, run:
 
   api = TextMagic::API.new(username, password)

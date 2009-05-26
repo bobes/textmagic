@@ -39,7 +39,7 @@ module TextMagic
 
     # Executes a send command and returns a hash with message ids, sent text and
     # number of parts if successful, otherwise it raises an Error.
-    # The returned hash will be extended with custom reader method defined
+    # The returned hash will be extended with custom reader methods defined
     # in Response module.
     #
     # This method accepts any positive number of phone numbers and an additional
@@ -90,7 +90,7 @@ module TextMagic
     # Executes a message_status command and returns a hash with states of
     # messages for specified ids if successful, otherwise it raises a
     # TextMagic::API::Error.
-    # The returned hash will be extended with custom reader method defined
+    # The returned hash will be extended with custom reader methods defined
     # in Response module.
     #
     # This method accepts any positive number of ids specified as an array
@@ -123,7 +123,7 @@ module TextMagic
 
     # Executes a receive command and returns a hash with unread messages
     # if successful, otherwise it raises an Error.
-    # The returned hash will be extended with custom reader method defined
+    # The returned hash will be extended with custom reader methods defined
     # in Response module.
     #
     # This method accepts an optional +last_retrieved_id+ value.
@@ -150,7 +150,7 @@ module TextMagic
 
     # Executes a delete_reply command and returns a hash with a list of deleted
     # message ids if successful, otherwise it raises an Error.
-    # The returned hash will be extended with custom reader method defined
+    # The returned hash will be extended with custom reader methods defined
     # in Response module.
     #
     # This method accepts any positive number of ids specified as an array
