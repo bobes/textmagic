@@ -64,12 +64,8 @@ module TextMagic
     #  response = api.send('Hi Vilma', '999314159265', '999271828182')
     #  response.message_ids
     #  # => ['141421', '173205']
-    #  response.message_id_hash
-    #  # => { '999314159265' => '141421', '999271828182' => '173205' }
-    #  response.message_id
+    #  response['999314159265']
     #  # => '141421'
-    #  response.message_id('999271828182')
-    #  # => '173205'
     #  response.parts_count
     #  # => 1
     def send(text, *args)
