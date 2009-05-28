@@ -6,6 +6,17 @@ It supports sending messages, receiving replies and more. You need to have
 a valid TextMagic[http://www.textmagic.com] account to use this gem. You can
 get one at http://www.textmagic.com.
 
+To learn more about the TextMagic's Bulk
+SMS Gateway, visit the official {API documentation}[http://api.textmagic.com]
+or {Google group}[http://groups.google.com/group/textmagic-api].
+
+Links:
+Code[http://github.com/bobes/textmagic/tree/master]
+|
+Doc[http://bobes.github.com/textmagic/rdoc]
+|
+Blame[http://bobes.github.com]
+
 
 == Installation
 
@@ -117,13 +128,6 @@ After you retrieve replies, you can delete them from server by running:
   # => true
 
 See TextMagic::API.delete_reply for more information on +message_status+ method.
-
-
-== Links
-
-For general information on TextMagic's Bulk SMS Gateway, visit the
-official {API documentation}[http://api.textmagic.com] or
-{Google group}[http://groups.google.com/group/textmagic-api].
 
 
 == Copyright
