@@ -62,3 +62,31 @@ Rake::RDocTask.new do |rdoc|
   rdoc.options << '--fmt' << 'shtml'
   rdoc.template = 'direct'
 end
+
+desc "Build, commit and publish the RDOC files"
+task :doc => :rerdoc do
+  cmd = <<-EOS
+  echo 'Packing and deleting rdoc directory'
+  tar -cf rdoc.tar rdoc
+  rm -rf rdoc
+  echo 'Checking out gh-pages branch'
+  git checkout -m gh-pages
+  echo 'Replacing rdoc directory'
+  rm -rf rdoc
+  tar -xf rdoc.tar
+  rm rdoc.tar
+  echo 'Commiting'
+  git add rdoc
+  git commit -m 'Updated RDoc'
+  echo 'Pushing to origin'
+  git push origin gh-pages
+  EOS
+
+  system cmd.split(/\n\s*/).join(' && ')
+
+  system <<-EOS
+  echo 'Checking out master'
+  git checkout master
+  echo 'Done'
+  EOS
+end
