@@ -1,141 +1,64 @@
+require 'ostruct'
+
 module TextMagic
 
   class API
 
-    # Used to cleanup response hash and extend it with custom reader methods.
-    #
-    # === Account response hash
-    #
-    # When extended, it
-    # * converts the +balance+ value to +float+ and
-    # * adds a reader method +balance+.
-    #
-    # === Send response hash
-    #
-    # When extended, it
-    # * inverts the +message_id+ hash and puts it in +message_id_hash+,
-    # * adds an array of ids to +message_ids+,
-    # * adds reader methods +message_id_hash+, +message_ids+, +sent_text+ and
-    #   +parts_count+ to the hash.
-    # * adds a reader method +message_id+, which returns a +message_id+ for
-    #   a given phone number, or the first message_id if no phone number
-    #   is specified.
-    #
-    # === Message status response hash
-    #
-    # When extended, it
-    # * converts the +credits_cost+ value to +float+,
-    # * converts the +created_time+ and +completed_time+ values to +Time+,
-    # * adds reader methods +text+, +status+, +reply_number+, +credits_cost+,
-    #   +created_time+ and +completed_time+ to all values of the hash.
-    #
-    # === Receive status response hash
-    #
-    # When extended, it
-    # * converts the +timestamp+ value to +Time+,
-    # * adds reader methods +messages+ and +unread+ to the hash
-    # * adds reader methods +message_id+, +timestamp+, +text+ and +from+
-    #   to all members of the +messages+ array.
-    #
-    # === Delete reply response hash
-    #
-    # When extended, it
-    # * adds a reader method +deleted+.
-    module Response
+    class Response
 
-      module Account #:nodoc: all
-
-        def self.extended(base)
-          return unless base.is_a?(Hash)
-          base['balance'] = base['balance'].to_f if base['balance']
-        end
-
-        def balance
-          self['balance']
-        end
+      def self.account(hash)
+        response = OpenStruct.new(hash)
+        response.balance = response.balance.to_f
+        response
       end
 
-      module Send #:nodoc: all
-
-        def self.extended(base)
-          return unless base.is_a?(Hash) && base['message_id']
-          base['message_ids'] = base['message_id'].keys.sort
-          base.merge! base.delete('message_id').invert
+      def self.send(hash, single)
+        response = nil
+        if single
+          response = hash['message_id'].keys.first.dup
+        else
+          response = hash['message_id'].invert
         end
-
-        %w(message_ids sent_text parts_count).each do |method|
-          module_eval <<-EOS
-          def #{method}
-            self['#{method}']
-          end
-          EOS
-        end
-
-        def message_id(phone = nil)
-          phone ? self[phone] : self['message_ids'].first
-        end
+        metaclass = class << response; self; end
+        metaclass.send :attr_accessor, :sent_text, :parts_count, :message_id
+        response.sent_text = hash['sent_text']
+        response.parts_count = hash['parts_count']
+        response.message_id = hash['message_id']
+        response
       end
 
-      module MessageStatus #:nodoc: all
-
-        def self.extended(base)
-          return unless base.is_a?(Hash)
-          base.values.each do |status|
-            status['credits_cost'] = status['credits_cost'].to_f if status['credits_cost']
-            status['created_time'] = Time.at(status['created_time'].to_i) if status['created_time']
-            status['completed_time'] = Time.at(status['completed_time'].to_i) if status['completed_time']
-            status.extend Status
-          end
+      def self.message_status(hash, single)
+        response = {}
+        hash.each do |message_id, message_hash|
+          status = message_hash['status'].dup
+          metaclass = class << status; self; end
+          metaclass.send :attr_accessor, :text, :credits_cost, :reply_number, :message_status, :created_time, :completed_time
+          status.text = message_hash['text']
+          status.credits_cost = message_hash['credits_cost']
+          status.reply_number = message_hash['reply_number']
+          status.message_status = message_hash['message_status']
+          status.created_time = Time.at(message_hash['created_time'].to_i) if message_hash['created_time']
+          status.completed_time = Time.at(message_hash['completed_time'].to_i) if message_hash['completed_time']
+          response[message_id] = status
         end
-
-        module Status
-
-          %w(text status reply_number credits_cost created_time completed_time).each do |method|
-            module_eval <<-EOS
-            def #{method}
-              self['#{method}']
-            end
-            EOS
-          end
-        end
+        single ? response.values.first : response
       end
 
-      module Receive #:nodoc: all
-
-        def self.extended(base)
-          return unless base.is_a?(Hash) && base['messages']
-          base['message_ids'] = base['messages'].collect { |message| message['message_id'] }.sort
-          base['messages'].each do |message|
-            message['timestamp'] = Time.at(message['timestamp'].to_i) if message['timestamp']
-            message.extend Message
-          end
+      def self.receive(hash)
+        response = hash['messages'].collect do |message_hash|
+          message = "#{message_hash['from']}: #{message_hash['text']}"
+          metaclass = class << message; self; end
+          metaclass.send :attr_accessor, :timestamp, :message_id, :text, :from
+          message.text = message_hash['text']
+          message.from = message_hash['from']
+          message.message_id = message_hash['message_id']
+          message.timestamp = Time.at(message_hash['timestamp'].to_i)
+          message
         end
-
-        %w(messages message_ids unread).each do |method|
-          module_eval <<-EOS, __FILE__, __LINE__ + 1
-          def #{method}
-            self['#{method}']
-          end
-          EOS
-        end
-
-        module Message
-
-          %w(message_id timestamp text from).each do |method|
-            module_eval <<-EOS
-            def #{method}
-              self['#{method}']
-            end
-            EOS
-          end
-        end
-      end
-
-      module DeleteReply #:nodoc: all
-
-        def deleted
-          self['deleted']
-        end
+        metaclass = class << response; self; end
+        metaclass.send :attr_accessor, :unread
+        response.unread = hash['unread']
+        response
       end
     end
   end

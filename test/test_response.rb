@@ -2,175 +2,223 @@ require 'test_helper'
 
 class ResponseTest < Test::Unit::TestCase
 
-  context 'Account response' do
+  context 'Response to account command' do
 
     setup do
       @balance = 0.1 * rand(1e4)
-      @response = { 'balance' => @balance.to_s }
-      @response.extend TextMagic::API::Response::Account
+      @hash = { 'balance' => @balance.to_s }
+      @response = TextMagic::API::Response.account(@hash)
     end
 
-    should 'allow access to balance' do
+    should 'be an OpenStruct instance' do
+      @response.class.should == OpenStruct
+    end
+
+    should 'have balance' do
       @response.balance.should be_close(@balance, 1e-10)
     end
   end
 
-  context 'Send response' do
+  context 'Response to send command with single phone number' do
 
     setup do
-      @message_id = {
-        '141421' => '999314159265',
-        '173205' => '999271828182'
-      }
+      @message_id, @phone = random_string, random_phone
       @text = random_string
-      @parts_count = rand(10)
-      @response = {
-        'message_id' => @message_id,
-        'sent_text' => @text,
-        'parts_count' => @parts_count
-      }
-      @response.extend TextMagic::API::Response::Send
+      @parts_count = 1 + rand(3)
+      @hash = { 'message_id' => { @message_id => @phone }, 'sent_text' => @text, 'parts_count' => @parts_count }
+      @response = TextMagic::API::Response.send(@hash, true)
     end
 
-    should 'allow access to message_ids array' do
-      @response.message_ids.should == ['141421', '173205']
+    should 'equal to the message_id' do
+      @response.should == @message_id
     end
 
-    should 'allow access to message_id for a given phone number' do
-      @response['999314159265'].should == '141421'
-      @response['999271828182'].should == '173205'
-    end
-
-    should 'allow access to sent_text' do
+    should 'have sent_text' do
       @response.sent_text.should == @text
     end
 
-    should 'allow access to parts_count' do
+    should 'have parts_count' do
       @response.parts_count.should == @parts_count
     end
   end
 
-  context 'MessageStatus response' do
+  context 'Response to send command with multiple phone numbers' do
+
+    setup do
+      @message_id1, @phone1 = random_string, random_phone
+      @message_id2, @phone2 = random_string, random_phone
+      @text = random_string
+      @parts_count = 1 + rand(3)
+      @hash = { 'message_id' => { @message_id1 => @phone1, @message_id2 => @phone2 }, 'sent_text' => @text, 'parts_count' => @parts_count }
+      @response = TextMagic::API::Response.send(@hash, false)
+    end
+
+    should 'be a hash' do
+      @response.class.should == Hash
+    end
+
+    should 'have phone numbers as keys' do
+      @response.keys.sort.should == [@phone1, @phone2].sort
+    end
+
+    should 'have message ids as values' do
+      @response[@phone1].should == @message_id1
+      @response[@phone2].should == @message_id2
+    end
+
+    should 'have sent_text' do
+      @response.sent_text.should == @text
+    end
+
+    should 'have parts_count' do
+      @response.parts_count.should == @parts_count
+    end
+  end
+
+  context 'Response to message_status command with single id' do
 
     setup do
       @text = random_string
+      @status = random_string
       @reply_number = random_phone
       @created_time = (Time.now - 30).to_i
       @completed_time = (Time.now - 20).to_i
       @credits_cost = 0.01 * rand(300)
-      @response = {
+      @hash = {
         '141421' => {
           'text' => @text,
-          'status' => 'd',
+          'status' => @status,
+          'created_time' => @created_time.to_s,
+          'reply_number' => @reply_number,
+          'completed_time' => @completed_time.to_s,
+          'credits_cost' => @credits_cost
+        }
+      }
+      @response = TextMagic::API::Response.message_status(@hash, true)
+    end
+
+    should 'equal to the message status' do
+      @response.should == @status
+    end
+
+    should 'have text' do
+      @response.text.should == @text
+    end
+
+    should 'have created_time' do
+      @response.created_time.should == Time.at(@created_time)
+    end
+
+    should 'have completed_time' do
+      @response.completed_time.should == Time.at(@completed_time)
+    end
+
+    should 'have reply_number' do
+      @response.reply_number.should == @reply_number
+    end
+
+    should 'have credits_cost' do
+      @response.credits_cost.should be_close(@credits_cost, 1e-10)
+    end
+  end
+  
+  context 'Response to message_status command with multiple ids' do
+
+    setup do
+      @text = random_string
+      @status = random_string
+      @reply_number = random_phone
+      @created_time = (Time.now - 30).to_i
+      @completed_time = (Time.now - 20).to_i
+      @credits_cost = 0.01 * rand(300)
+      @hash = {
+        '141421' => {
+          'text' => @text,
+          'status' => @status,
           'created_time' => @created_time,
           'reply_number' => @reply_number,
           'completed_time' => @completed_time,
           'credits_cost' => @credits_cost
-        },
-        '173205' => {
-          'text' => 'test',
-          'status' => 'r',
-          'created_time' => '1242979839',
-          'reply_number' => '447624800500',
-          'completed_time' => nil,
-          'credits_cost' => 0.5
         }
       }
-      @response.extend TextMagic::API::Response::MessageStatus
+      @response = TextMagic::API::Response.message_status(@hash, false)
     end
 
-    should 'allow access to text for all statuses' do
-      @response['141421'].text.should == @text
-      @response['173205'].text.should == 'test'
+    should 'be a hash' do
+      @response.class.should == Hash
     end
 
-    should 'allow access to status for a given message_id' do
-      @response['141421'].status.should == 'd'
-      @response['173205'].status.should == 'r'
+    should 'have message_ids as keys' do
+      @response.keys.should == ['141421']
     end
 
-    should 'allow access to reply_number for a given message_id' do
-      @response['141421'].reply_number.should == @reply_number
-      @response['173205'].reply_number.should == '447624800500'
+    should 'contain statuses' do
+      @response.values.first.should == @status
     end
 
-    should 'allow access to created_time for a given message_id' do
-      @response['141421'].created_time.should == Time.at(@created_time)
-      @response['173205'].created_time.should == Time.at(1242979839)
+    should 'have text for all statuses' do
+      @response.values.first.text.should == @text
     end
 
-    should 'allow access to completed_time for a given message_id' do
-      @response['141421'].completed_time.should == Time.at(@completed_time)
-      @response['173205'].completed_time.should == nil
+    should 'have created_time for all statuses' do
+      @response.values.first.created_time.should == Time.at(@created_time)
     end
 
-    should 'allow access to credits_cost for a given message_id' do
-      @response['141421'].credits_cost.should be_close(@credits_cost, 1e-10)
-      @response['173205'].credits_cost.should be_close(0.5, 1e-10)
+    should 'have completed_time for all statuses' do
+      @response.values.first.completed_time.should == Time.at(@completed_time)
+    end
+
+    should 'have reply_number for all statuses' do
+      @response.values.first.reply_number.should == @reply_number
+    end
+
+    should 'have credits_cost for all statuses' do
+      @response.values.first.credits_cost.should be_close(@credits_cost, 1e-10)
     end
   end
 
-  context 'Receive response' do
+  context 'Response to receive command' do
 
     setup do
       @timestamp = (Time.now - 30).to_i
-      @message1 = {
+      @text, @phone, @message_id = random_string, random_phone, random_string
+      @message = {
         'timestamp' => @timestamp,
-        'from' => '999314159265',
-        'text' => 'Hi Fred',
-        'message_id' => '141421'
+        'from' => @phone,
+        'text' => @text,
+        'message_id' => @message_id
       }
-      @message2 = {
-        'timestamp' => 1243244148,
-        'from' => '999271828182',
-        'text' => 'Hello buddy',
-        'message_id' => '173205'
-      }
-      @messages = [@message1, @message2]
       @unread = rand(1e4)
-      @response = { 'unread' => @unread, 'messages' => @messages }
-      @response.extend TextMagic::API::Response::Receive
+      @hash = { 'unread' => @unread, 'messages' => [@message] }
+      @response = TextMagic::API::Response.receive(@hash)
     end
 
-    should 'allow access to unread' do
+    should 'have unread' do
       @response.unread.should == @unread
     end
 
-    should 'allow access to messages array' do
-      @response.messages.should == @messages
+    should 'be an array' do
+      @response.class.should == Array
     end
 
-    should 'allow access to message_ids array' do
-      @response.message_ids.should == ['141421', '173205']
+    should 'contain strings with phones numbers and texts' do
+      @response.first.should == "#{@phone}: #{@text}"
     end
 
-    should 'allow access to message_id for all messages' do
-      @response.messages.first.message_id.should == '141421'
+    should 'have timestamp for all messages' do
+      @response.first.timestamp.should == Time.at(@timestamp)
     end
 
-    should 'allow access to timestamp for all messages' do
-      @response.messages.first.timestamp.should == Time.at(@timestamp)
+    should 'have from for allmessages' do
+      @response.first.from.should == @phone
     end
 
-    should 'allow access to from for all messages' do
-      @response.messages.first.from.should == '999314159265'
+    should 'have text for all messages' do
+      @response.first.text.should == @text
     end
 
-    should 'allow access to text for all messages' do
-      @response.messages.first.text.should == 'Hi Fred'
-    end
-  end
-
-  context 'DeleteReply response' do
-
-    setup do
-      @ids = ['141421', '1780826']
-      @response = { 'deleted' => @ids }
-      @response.extend TextMagic::API::Response::DeleteReply
-    end
-
-    should 'allow access to deleted' do
-      @response.deleted.should == @ids
+    should 'have message_id for all messages' do
+      @response.first.message_id.should == @message_id
     end
   end
 end

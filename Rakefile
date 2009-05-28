@@ -1,5 +1,6 @@
 require 'rubygems'
 require 'rake'
+require 'sdoc'
 
 begin
   require 'jeweler'
@@ -57,4 +58,7 @@ Rake::RDocTask.new do |rdoc|
   rdoc.title = "textmagic #{version}"
   rdoc.rdoc_files.include('README*')
   rdoc.rdoc_files.include('lib/**/*.rb')
+  rdoc.options << '--charset' << 'utf8'
+  rdoc.options << '--fmt' << 'shtml'
+  rdoc.template = 'direct'
 end

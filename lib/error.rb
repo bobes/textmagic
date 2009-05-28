@@ -6,8 +6,8 @@ module TextMagic
 
       attr_reader :code, :message
 
-      # Creates an instance of TextMagic::API::Error. Error code and message
-      # can be supplied as arguments or as a response hash.
+      # Creates an instance of TextMagic::API::Error. Error code and error message
+      # can be supplied as arguments or in a hash.
       #
       #  TextMagic::API::Error.new(code, message)
       #  TextMagic::API::Error.new('error_code' => code, 'error_message' => message)

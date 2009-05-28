@@ -13,27 +13,23 @@ class APITest < Test::Unit::TestCase
   context 'Account command' do
 
     setup do
-      @balance = 0.01 * rand(1e4)
       @username, @password = random_string, random_string
       @api = TextMagic::API.new(@username, @password)
+      @response = random_string
+      @processed_response = random_string
+      TextMagic::API::Executor.stubs(:execute).returns(@response)
+      TextMagic::API::Response.stubs(:account).returns(@processed_response)
     end
 
     should 'call Executor execute with correct arguments' do
-      TextMagic::API::Executor.expects(:execute).with('account', @username, @password).returns({})
+      TextMagic::API::Executor.expects(:execute).with('account', @username, @password).returns(@response)
       @api.account
     end
 
-    should 'return a hash extended with TextMagic::API::Response::Account' do
-      TextMagic::API::Executor.expects(:execute).returns({ 'balance' => @balance.to_s })
-      response = @api.account
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::Account).should == true
-    end
-
-    should 'return a hash with balance value' do
-      TextMagic::API::Executor.expects(:execute).returns({ 'balance' => @balance.to_s })
-      response = @api.account
-      response['balance'].should be_close(@balance, 1e-10)
+    should 'call Response.account method to process the response hash' do
+      processed_response = rand
+      TextMagic::API::Response.expects(:account).with(@response).returns(processed_response)
+      @api.account.should == processed_response
     end
   end
 
@@ -43,33 +39,36 @@ class APITest < Test::Unit::TestCase
       @username, @password = random_string, random_string
       @text, @phone = random_string, random_phone
       @api = TextMagic::API.new(@username, @password)
-      TextMagic::API::Executor.stubs(:execute)
+      @response = random_string
+      @processed_response = random_string
+      TextMagic::API::Executor.stubs(:execute).returns(@response)
+      TextMagic::API::Response.stubs(:send).returns(@processed_response)
     end
 
     should 'call Executor execute with correct arguments' do
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0)
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0).returns(@response)
       @api.send(@text, @phone)
     end
 
     should 'join multiple phone numbers supplied as an array' do
       phones = Array.new(3) { random_phone }
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','), :unicode => 0)
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','), :unicode => 0).returns(@response)
       @api.send(@text, phones)
     end
 
     should 'join multiple phone numbers supplied as arguments' do
       phones = Array.new(3) { random_phone }
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','), :unicode => 0)
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => phones.join(','), :unicode => 0).returns(@response)
       @api.send(@text, *phones)
     end
 
     should 'replace true with 1 for unicode' do
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 1)
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 1).returns(@response)
       @api.send(@text, @phone, :unicode => true)
     end
 
     should 'set unicode value to 0 if it is not set to by user and text contains only characters from GSM 03.38 charset' do
-      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0).times(2)
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0).returns(@response).times(2)
       @api.send(@text, @phone)
       @api.send(@text, @phone, :unicode => false)
     end
@@ -103,21 +102,17 @@ class APITest < Test::Unit::TestCase
       lambda { @api.send(@text, @phone) }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash extended with TextMagic::API::Response::Send' do
-      message_id = random_string
-      TextMagic::API::Executor.expects(:execute).returns({ 'message_id' => { message_id => @phone }, 'sent_text' => @text, 'parts_count' => 1 })
-      response = @api.send(@text, @phone)
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::Send).should == true
+    should 'call Response.send method to process the response hash (single phone)' do
+      processed_response = rand
+      TextMagic::API::Response.expects(:send).with(@response, true).returns(processed_response)
+      @api.send(@text, random_phone).should == processed_response
     end
 
-    should 'return a hash with message_ids, sent_text and parts_count values' do
-      message_id = random_string
-      TextMagic::API::Executor.expects(:execute).returns({ 'message_id' => { message_id => @phone }, 'sent_text' => @text, 'parts_count' => 1 })
-      response = @api.send(@text, @phone)
-      response['message_ids'].should == [message_id]
-      response['sent_text'].should == @text
-      response['parts_count'].should == 1
+    should 'call Response.send method to process the response hash (multiple phones)' do
+      processed_response = rand
+      TextMagic::API::Response.expects(:send).with(@response, false).returns(processed_response).twice
+      @api.send(@text, [random_phone]).should == processed_response
+      @api.send(@text, random_phone, random_phone).should == processed_response
     end
   end
 
@@ -126,15 +121,16 @@ class APITest < Test::Unit::TestCase
     setup do
       @username, @password = random_string, random_string
       @api = TextMagic::API.new(@username, @password)
-      @id = random_string
-      @status = { 'text' => 'Hi Vilma', 'status' => 'd' , 'created_time' => Time.now.to_i, 'reply_number' => '447624800500', 'completed_time' => nil, 'credits_cost' => 0.5 }
-      @response = { @id => @status }
-      TextMagic::API::Executor.stubs(:execute)
+      @response = random_string
+      @processed_response = random_string
+      TextMagic::API::Executor.stubs(:execute).returns(@response)
+      TextMagic::API::Response.stubs(:message_status).returns(@processed_response)
     end
 
     should 'call Executor execute with correct arguments' do
-      TextMagic::API::Executor.expects(:execute).with('message_status', @username, @password, :ids => @id).returns(@response)
-      @api.message_status(@id)
+      id = random_string
+      TextMagic::API::Executor.expects(:execute).with('message_status', @username, @password, :ids => id).returns(@response)
+      @api.message_status(id)
     end
 
     should 'join ids supplied as array' do
@@ -154,43 +150,15 @@ class APITest < Test::Unit::TestCase
       lambda { @api.message_status }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash extended with TextMagic::API::Response::MessageStatus for an array of ids' do
-      TextMagic::API::Executor.expects(:execute).returns(@response)
-      response = @api.message_status([@id])
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::MessageStatus).should == true
+    should 'call Response.message_status method to process the response hash (single id)' do
+      TextMagic::API::Response.expects(:message_status).with(@response, true).returns(@processed_response)
+      @api.message_status(random_string).should == @processed_response
     end
 
-    should 'return a hash with message ids as keys for an array of ids' do
-      TextMagic::API::Executor.expects(:execute).returns(@response)
-      response = @api.message_status([@id])
-      response[@id].should == @status
-    end
-
-    should 'return a hash extended with TextMagic::API::Response::MessageStatus for a list of ids' do
-      TextMagic::API::Executor.expects(:execute).returns(@response)
-      response = @api.message_status(@id, random_string)
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::MessageStatus).should == true
-    end
-
-    should 'return a hash with message ids as keys for a list of ids' do
-      TextMagic::API::Executor.expects(:execute).returns(@response)
-      response = @api.message_status(@id, random_string)
-      response[@id].should == @status
-    end
-
-    should 'return a hash extended with TextMagic::API::Response::MessageStatus::Status for a single id' do
-      TextMagic::API::Executor.expects(:execute).returns(@response)
-      response = @api.message_status(@id)
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::MessageStatus::Status).should == true
-    end
-
-    should 'return a hash with message ids as keys for a single id' do
-      TextMagic::API::Executor.expects(:execute).returns(@response)
-      response = @api.message_status(@id)
-      response.should == @status
+    should 'call Response.message_status method to process the response hash (multiple ids)' do
+      TextMagic::API::Response.expects(:message_status).with(@response, false).returns(@processed_response).twice
+      @api.message_status([random_string]).should == @processed_response
+      @api.message_status(random_string, random_string).should == @processed_response
     end
   end
 
@@ -199,6 +167,10 @@ class APITest < Test::Unit::TestCase
     setup do
       @username, @password = random_string, random_string
       @api = TextMagic::API.new(@username, @password)
+      @response = random_string
+      @processed_response = random_string
+      TextMagic::API::Executor.stubs(:execute).returns(@response)
+      TextMagic::API::Response.stubs(:receive).returns(@processed_response)
     end
 
     should 'call Executor execute with correct arguments' do
@@ -212,18 +184,9 @@ class APITest < Test::Unit::TestCase
       @api.receive(last_retrieved_id)
     end
 
-    should 'return a hash extended with TextMagic::API::Response::Receive' do
-      TextMagic::API::Executor.expects(:execute).returns({ 'messages' => [], 'unread' => 0 })
-      response = @api.receive
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::Receive).should == true
-    end
-
-    should 'return a hash with unread and messages values' do
-      TextMagic::API::Executor.expects(:execute).returns({ 'messages' => [], 'unread' => 0 })
-      response = @api.receive
-      response['unread'].should == 0
-      response['messages'].should == []
+    should 'call Response.receive method to process the response hash' do
+      TextMagic::API::Response.expects(:receive).with(@response).returns(@processed_response)
+      @api.receive(random_string).should == @processed_response
     end
   end
 
@@ -232,6 +195,10 @@ class APITest < Test::Unit::TestCase
     setup do
       @username, @password = random_string, random_string
       @api = TextMagic::API.new(@username, @password)
+      @response = random_string
+      @processed_response = random_string
+      TextMagic::API::Executor.stubs(:execute).returns(@response)
+      TextMagic::API::Response.stubs(:delete_reply).returns(@processed_response)
     end
 
     should 'call Executor execute with correct arguments' do
@@ -257,19 +224,8 @@ class APITest < Test::Unit::TestCase
       lambda { @api.delete_reply }.should raise_error(TextMagic::API::Error)
     end
 
-    should 'return a hash extended with TextMagic::API::Response::DeleteReply' do
-      ids = Array.new(3) { random_string }
-      TextMagic::API::Executor.expects(:execute).returns({ 'deleted' => ids })
-      response = @api.delete_reply(ids)
-      response.class.should == Hash
-      response.is_a?(TextMagic::API::Response::DeleteReply).should == true
-    end
-
-    should 'return a hash with deleted value' do
-      ids = Array.new(3) { random_string }
-      TextMagic::API::Executor.expects(:execute).returns({ 'deleted' => ids })
-      response = @api.delete_reply(ids)
-      response.deleted.should == ids
+    should 'return true' do
+      @api.delete_reply(random_string).should == true
     end
   end
 end
