@@ -125,6 +125,9 @@ module TextMagic
     # a hash response, put the id in an array:
     #
     #  api.message_status(['141421'])
+    #
+    # <b>It is strongly encouraged to setup callbacks to receive updates on message status
+    # instead of using this method.</b>
     def message_status(*ids)
       single = ids.size == 1 && ids.first.is_a?(String)
       ids.flatten!
@@ -142,7 +145,9 @@ module TextMagic
     # In case the request to the SMS gateway is not successful or the server returns
     # an error response, an Error is raised.
     #
-    # This method accepts an optional +last_retrieved_id+ value.
+    # This method accepts an optional +last_retrieved_id+ value. If called
+    # with this argument, the gateway will only return replies newer than the
+    # one with specified id.
     #
     # Example usage:
     #
@@ -156,6 +161,9 @@ module TextMagic
     #  # => '223606'
     #  api.receive '223606'
     #  # => []
+    #
+    # <b>It is strongly encouraged to setup callbacks to receive replies instead of
+    # using this method.</b>
     def receive(last_retrieved_id = nil)
       hash = Executor.execute('receive', @username, @password, :last_retrieved_id => last_retrieved_id)
       TextMagic::API::Response.receive(hash)
