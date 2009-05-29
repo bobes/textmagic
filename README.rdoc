@@ -11,11 +11,11 @@ SMS Gateway, visit the official {API documentation}[http://api.textmagic.com]
 or {Google group}[http://groups.google.com/group/textmagic-api].
 
 Links:
+Doc[http://tuzinsky.com/textmagic/rdoc]
+|
 Code[http://github.com/bobes/textmagic/tree/master]
 |
-Doc[http://bobes.github.com/textmagic/rdoc]
-|
-Blame[http://bobes.github.com]
+Blame[http://tuzinsky.com]
 
 
 == Installation
