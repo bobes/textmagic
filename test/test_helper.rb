@@ -27,12 +27,6 @@ def random_hash
   hash
 end
 
-def build_uri(command, username, password, options = {})
-  options.merge!(:cmd => command, :username => username, :password => password)
-  uri = "http://www.textmagic.com/app/api?"
-  uri << options.collect { |key, value| "#{key}=#{value}"}.join('&')
-end
-
 def load_response(filename)
   File.read(File.join(File.dirname(__FILE__), 'fixtures', filename) + '.json')
 end

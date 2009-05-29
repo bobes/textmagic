@@ -1,0 +1,8 @@
+== edge
+
+* Sending POST requests instead of GET
+
+== 0.3.0 2009-05-28
+
+* The first official release.
+* Support for account, send, receive, message_status and delete_reply API commands
