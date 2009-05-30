@@ -13,7 +13,7 @@ require 'textmagic'
 class Test::Unit::TestCase
 end
 
-def random_string(legth = 5)
+def random_string(legth = 5 + rand(10))
   Array.new(legth) { rand(36).to_s(36) }.join
 end
 

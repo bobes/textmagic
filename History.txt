@@ -1,3 +1,7 @@
+== unreleased features
+
+* Fixed message length validation to count escaped characters twice for non-unicode messages.
+
 == 0.3.1 2009-05-30
 
 * Sending POST requests instead of GET.

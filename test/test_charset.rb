@@ -25,4 +25,21 @@ class CharsetTest < Test::Unit::TestCase
       TextMagic::API.is_gsm('Thai: สวัสดี').should == false
     end
   end
+
+  context 'real_length method' do
+
+    should 'count escaped characters as two and all others as one for non-unicode text' do
+      escaped = "{}\\~[]|€"
+      unescaped = random_string
+      text = "#{escaped}#{unescaped}".scan(/./).sort_by { rand }.join
+      TextMagic::API.real_length(text, false).should == unescaped.size + escaped.size * 2
+    end
+
+    should 'count all characters as one for unicode text' do
+      escaped = "{}\\~[]|€"
+      unescaped = random_string
+      text = "#{escaped}#{unescaped}".scan(/./).sort_by { rand }.join
+      TextMagic::API.real_length(text, true).should == unescaped.size + escaped.size
+    end
+  end
 end

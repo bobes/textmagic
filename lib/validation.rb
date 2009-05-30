@@ -17,7 +17,7 @@ module TextMagic
       # 70, 134 and 201 respectively.</em>
       def validate_text_length(text, unicode, parts = 3)
         max_text_length = (unicode ? MAX_LENGTH_UNICODE : MAX_LENGTH_GSM)[parts - 1]
-        text.size <= max_text_length
+        real_length(text, unicode) <= max_text_length
       end
 
       # Validates a list of phone numbers. Returns +true+ if the list is not empty

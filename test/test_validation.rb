@@ -5,6 +5,12 @@ class ValidationTest < Test::Unit::TestCase
 
   context 'validate_text_length method for non-unicode texts' do
 
+    should 'use real_length method to determine the real length of the message' do
+      text = random_string
+      TextMagic::API.expects(:real_length).with(text, false).returns(0)
+      TextMagic::API.validate_text_length(text, false, 1)
+    end
+
     should 'return true if parts limit is set to 1 and text length is less than or equal to 160' do
       TextMagic::API.validate_text_length(random_string(160), false, 1).should == true
     end
@@ -33,6 +39,12 @@ class ValidationTest < Test::Unit::TestCase
   end
 
   context 'validate_text_length method for unicode texts' do
+
+    should 'use real_length method to determine the real length of the message' do
+      text = random_string
+      TextMagic::API.expects(:real_length).with(text, true).returns(0)
+      TextMagic::API.validate_text_length(text, true, 1)
+    end
 
     should 'return true if parts limit is set to 1 and text length is less than or equal to 70' do
       TextMagic::API.validate_text_length(random_string(70), true, 1).should == true
