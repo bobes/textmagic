@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{textmagic}
-  s.version = "0.3.0"
+  s.version = "0.3.1"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Vladimir Bobes Tuzinsky"]
-  s.date = %q{2009-05-28}
+  s.date = %q{2009-05-30}
   s.email = %q{vladimir.tuzinsky@gmail.com}
   s.extra_rdoc_files = [
     "LICENSE",
@@ -15,6 +15,7 @@ Gem::Specification.new do |s|
   s.files = [
     ".document",
      ".gitignore",
+     "History.txt",
      "LICENSE",
      "README.rdoc",
      "Rakefile",
