@@ -94,8 +94,9 @@ you'll get a hash with message ids as keys:
 
 See TextMagic::API.message_status for more information on +message_status+ method.
 
-<b>It is strongly encouraged to setup callbacks to receive updates on message status
-instead of using this method.</b>
+<b>It is strongly recommended to setup callbacks to receive updates on message status
+instead of using this method. Learn more about callbacks at
+{TextMagic API}[http://api.textmagic.com/https-api] site</b>
 
 === Receiving replies
 
@@ -117,8 +118,9 @@ To prevent receiving old replies again, supply +last_retrieved_id+ argument:
 
 See TextMagic::API.receive for more information on +message_status+ method.
 
-<b>It is strongly encouraged to setup callbacks to receive replies instead of
-using this method.</b>
+<b>It is strongly recommended to setup callbacks to receive replies instead of
+using this method. Learn more about callbacks at
+{TextMagic API}[http://api.textmagic.com/https-api] site</b>
 
 === Deleting retrieved replies
 
