@@ -9,7 +9,7 @@ begin
     gem.summary = %Q{Ruby interface to the TextMagic's Bulk SMS Gateway}
     gem.email = "vladimir.tuzinsky@gmail.com"
     gem.homepage = "http://github.com/bobes/textmagic"
-    gem.authors = ["Vladimir Bobes Tuzinsky"]
+    gem.authors = ["Vladimír Bobeš Tužinský"]
     gem.rubyforge_project = "textmagic"
     gem.add_runtime_dependency "httparty", ">= 0.4.3"
     gem.add_development_dependency "mocha", ">= 0.9.5"
