@@ -2,12 +2,20 @@
 
 Gem::Specification.new do |s|
   s.name = %q{textmagic}
-  s.version = "0.3.1"
+  s.version = "0.3.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = ["Vladimir Bobes Tuzinsky"]
-  s.date = %q{2009-05-30}
+  s.authors = ["Vladim\303\255r Bobe\305\241 Tu\305\276insk\303\275"]
+  s.date = %q{2009-06-07}
+  s.default_executable = %q{tm}
+  s.description = %q{
+      textmagic is a Ruby interface to the TextMagic's Bulk SMS Gateway.
+      It can be used to easily integrate SMS features into your application.
+      It supports sending messages, receiving replies and more.
+      You need to have a valid TextMagic account to use this gem. You can get one at http://www.textmagic.com.
+    }
   s.email = %q{vladimir.tuzinsky@gmail.com}
+  s.executables = ["tm"]
   s.extra_rdoc_files = [
     "LICENSE",
      "README.rdoc"
@@ -20,6 +28,7 @@ Gem::Specification.new do |s|
      "README.rdoc",
      "Rakefile",
      "VERSION.yml",
+     "bin/tm",
      "lib/api.rb",
      "lib/charset.rb",
      "lib/error.rb",
