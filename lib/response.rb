@@ -9,6 +9,7 @@ module TextMagic
       def self.account(hash)
         response = OpenStruct.new(hash)
         response.balance = response.balance.to_f
+        response.balance = response.balance.to_i if response.balance % 1 == 0
         response
       end
 
