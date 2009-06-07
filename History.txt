@@ -1,4 +1,4 @@
-== unreleased features
+== 0.3.2 2009-06-07
 
 * Fixed message length validation to count escaped characters twice for non-unicode messages.
 * Aliased message_status as status and delete_reply as delete.
