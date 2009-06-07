@@ -109,7 +109,7 @@ To receive all available replies, run:
   replies.last.from
   # => '999314159265'
   replies.last.message_id
-  # => '223606'
+  # => '178082'
 
 To prevent receiving old replies again, supply +last_retrieved_id+ argument:
 
