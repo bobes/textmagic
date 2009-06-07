@@ -135,6 +135,7 @@ module TextMagic
       hash = Executor.execute('message_status', @username, @password, :ids => ids.join(','))
       TextMagic::API::Response.message_status(hash, single)
     end
+    alias :status :message_status
 
     # Executes a receive command by sending a request to the TextMagic's
     # SMS gateway.
@@ -188,5 +189,6 @@ module TextMagic
       Executor.execute('delete_reply', @username, @password, :ids => ids.join(','))
       true
     end
+    alias :delete :delete_reply
   end
 end
