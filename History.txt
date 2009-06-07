@@ -3,6 +3,7 @@
 * Fixed message length validation to count escaped characters twice for non-unicode messages.
 * Aliased message_status as status and delete_reply as delete.
 * Account command returns balance as Fixnum if possible.
+* Added a command line utility.
 
 == 0.3.1 2009-05-30
 

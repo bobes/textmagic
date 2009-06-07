@@ -1,12 +1,9 @@
 require 'rubygems'
 gem 'httparty'
 require 'httparty'
-require 'charset'
-require 'validation'
-require 'api'
-require 'response'
-require 'executor'
-require 'error'
+%w[charset validation api response executor error].each do |lib|
+  require File.join(File.dirname(__FILE__), lib)
+end
 
 module TextMagic #:nodoc:
 end

@@ -132,6 +132,18 @@ After you retrieve replies, you can delete them from server by running:
 See TextMagic::API.delete_reply for more information on +message_status+ method.
 
 
+== Command-line utility
+
+The +textmagic+ gem also features a handy command-line utility. It gives you access
+to all of the gem's features. Run
+
+  tm
+
+from your console to see help on its usage.
+
+<i>Note: This has only been tested on a Mac. If you have any troubles using this
+utility, contact the author (or submit a patch).</i>
+
 == Copyright
 
 Copyright (c) 2009 Vladimír Bobeš Tužinský. See LICENSE for details.
