@@ -7,6 +7,12 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "textmagic"
     gem.summary = %Q{Ruby interface to the TextMagic's Bulk SMS Gateway}
+    gem.description = %Q{
+      textmagic is a Ruby interface to the TextMagic's Bulk SMS Gateway.
+      It can be used to easily integrate SMS features into your application.
+      It supports sending messages, receiving replies and more.
+      You need to have a valid TextMagic account to use this gem. You can get one at http://www.textmagic.com.
+    }
     gem.email = "vladimir.tuzinsky@gmail.com"
     gem.homepage = "http://github.com/bobes/textmagic"
     gem.authors = ["Vladimír Bobeš Tužinský"]
