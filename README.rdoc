@@ -68,6 +68,10 @@ of parts, specify an optional +max_length+ parameter:
 
   api.send 'Very very long message...', '999314159265', :max_length => 2
 
+If you want to postpone message delivery, specify a +send_time+ parameter:
+
+  api.send 'Two hours later', '999314159265', :send_time => Time.now.to_i + 7200
+
 See TextMagic::API.send for more information on +send+ method.
 
 === Checking sent message status

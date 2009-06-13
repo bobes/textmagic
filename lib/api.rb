@@ -51,6 +51,10 @@ module TextMagic
     #   the text.
     # * +max_length+: accepted values are +nil+, +1+, +2+ and +3+, defaults to nil.
     #   If not specified, the SMS gateway will apply its own default value.
+    # * +send_time+: allows you to postpone sending of the message. Note that the message
+    #   will be sent to the SMS gateway immediately and will wait there until the specified
+    #   time. You can either supply a numeric value denoting number of seconds since
+    #   1.1.1970, or a Time object.
     #
     # Example usage:
     #
@@ -70,6 +74,10 @@ module TextMagic
     # want to get a hash response, put the phone number in an array:
     #
     #  api.send('Hi Barney', ['999271828182'])
+    #
+    # Postponed sending:
+    #
+    #  api.send('Two hours later', '999314159265', :send_time => Time.now.to_i + 7200)
     def send(text, *args)
       raise Error.new(1, 'Message text is empty') if text.nil? || text.blank?
       options = args.last.is_a?(Hash) ? args.pop : {}
@@ -85,6 +93,7 @@ module TextMagic
       single = args.size == 1 && args.first.is_a?(String)
       phones = args.flatten
       raise Error.new(9, 'Invalid phone number format') unless API.validate_phones(phones)
+      options[:send_time] = options[:send_time].to_i if options[:send_time]
       hash = Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
       TextMagic::API::Response.send(hash, single)
     end
@@ -190,5 +199,49 @@ module TextMagic
       true
     end
     alias :delete :delete_reply
+
+    # Executes a check_number command by sending a request to the TextMagic's
+    # SMS gateway.
+    #
+    # If called with a single phone number, this method returns an OpenStruct instance
+    # with credit price and country code for the given phone number. If called with
+    # multiple phone numbers, the method returns a hash of such instances with phone
+    # numbers as keys.
+    # In case the request to the SMS gateway is not successful or the server returns
+    # an error response, an Error is raised.
+    #
+    # Example usage:
+    #
+    #  check = api.check_number('447624800500')
+    #  check.price
+    #  # => 0.8
+    #  check.country
+    #  # => 'GB'
+    #
+    # Example with multiple phone numbers:
+    #
+    #  check = api.check_number('447624800500', '61428102137')
+    #  check['447624800500'].price
+    #  # => 0.8
+    #  check['61428102137'].country
+    #  # => 'AU'
+    #
+    # Multiple phone number can be supplied as an array or as a list of arguments:
+    #
+    #  api.check_number(['447624800500', '61428102137'])
+    #  api.check_number('447624800500', '61428102137')
+    #
+    # If you want to check a single phone number but still want to get
+    # a hash response, put the number in an array:
+    #
+    #  api.check_number(['447624800500'])
+    def check_number(*phones)
+      single = phones.size == 1 && phones.first.is_a?(String)
+      phones.flatten!
+      raise TextMagic::API::Error.new(4, 'Insufficient parameters') if phones.empty?
+      hash = Executor.execute('check_number', @username, @password, :phone => phones.join(','))
+      TextMagic::API::Response.check_number(hash, single)
+    end
+    alias :check :check_number
   end
 end

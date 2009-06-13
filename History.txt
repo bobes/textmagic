@@ -1,3 +1,8 @@
+== 0.3.3 2009-06-13
+
+* Added support for send_time parameter for send command.
+* Added support for check_number command.
+
 == 0.3.2 2009-06-07
 
 * Fixed message length validation to count escaped characters twice for non-unicode messages.

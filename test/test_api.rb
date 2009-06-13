@@ -102,6 +102,18 @@ class APITest < Test::Unit::TestCase
       lambda { @api.send(@text, @phone) }.should raise_error(TextMagic::API::Error)
     end
 
+    should 'support send_time option' do
+      time = Time.now + rand
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0, :send_time => time.to_i).returns(@response)
+      @api.send(@text, @phone, :send_time => time.to_i)
+    end
+
+    should 'convert send_time to Fixnum' do
+      time = Time.now + rand
+      TextMagic::API::Executor.expects(:execute).with('send', @username, @password, :text => @text, :phone => @phone, :unicode => 0, :send_time => time.to_i).returns(@response)
+      @api.send(@text, @phone, :send_time => time)
+    end
+
     should 'call Response.send method to process the response hash (single phone)' do
       processed_response = rand
       TextMagic::API::Response.expects(:send).with(@response, true).returns(processed_response)
@@ -226,6 +238,52 @@ class APITest < Test::Unit::TestCase
 
     should 'return true' do
       @api.delete_reply(random_string).should == true
+    end
+  end
+
+  context 'Check number command' do
+
+    setup do
+      @username, @password = random_string, random_string
+      @api = TextMagic::API.new(@username, @password)
+      @response = random_string
+      @processed_response = random_string
+      TextMagic::API::Executor.stubs(:execute).returns(@response)
+      TextMagic::API::Response.stubs(:check_number).returns(@processed_response)
+    end
+
+    should 'call Executor execute with correct arguments' do
+      phone = random_phone
+      TextMagic::API::Executor.expects(:execute).with('check_number', @username, @password, :phone => phone)
+      @api.check_number(phone)
+    end
+
+    should 'join phones supplied as array' do
+      phones = Array.new(3) { random_phone }
+      TextMagic::API::Executor.expects(:execute).with('check_number', @username, @password, :phone => phones.join(','))
+      @api.check_number(phones)
+    end
+
+    should 'join phones supplied as arguments' do
+      phones = Array.new(3) { random_phone }
+      TextMagic::API::Executor.expects(:execute).with('check_number', @username, @password, :phone => phones.join(','))
+      @api.check_number(*phones)
+    end
+
+    should 'not call execute and should raise an exception if no phones are specified' do
+      TextMagic::API::Executor.expects(:execute).never
+      lambda { @api.check_number }.should raise_error(TextMagic::API::Error)
+    end
+
+    should 'call Response.check_number method to process the response hash (single phone)' do
+      TextMagic::API::Response.expects(:check_number).with(@response, true).returns(@processed_response)
+      @api.check_number(random_string).should == @processed_response
+    end
+
+    should 'call Response.check_number method to process the response hash (mulitple phones)' do
+      TextMagic::API::Response.expects(:check_number).with(@response, false).returns(@processed_response).twice
+      @api.check_number([random_string]).should == @processed_response
+      @api.check_number(random_string, random_string).should == @processed_response
     end
   end
 end

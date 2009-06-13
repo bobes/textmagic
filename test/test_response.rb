@@ -121,7 +121,7 @@ class ResponseTest < Test::Unit::TestCase
       @response.credits_cost.should be_close(@credits_cost, 1e-10)
     end
   end
-  
+
   context 'Response to message_status command with multiple ids' do
 
     setup do
@@ -209,7 +209,7 @@ class ResponseTest < Test::Unit::TestCase
       @response.first.timestamp.should == Time.at(@timestamp)
     end
 
-    should 'have from for allmessages' do
+    should 'have from for all messages' do
       @response.first.from.should == @phone
     end
 
@@ -219,6 +219,70 @@ class ResponseTest < Test::Unit::TestCase
 
     should 'have message_id for all messages' do
       @response.first.message_id.should == @message_id
+    end
+  end
+
+  context 'Response to check_number command with single phone' do
+
+    setup do
+      @phone = random_phone
+      @price = rand
+      @country = random_string
+      @hash = {
+        @phone => {
+          'price' => @price,
+          'country' => @country
+        }
+      }
+      @response = TextMagic::API::Response.check_number(@hash, true)
+    end
+
+    should 'be an OpenStruct instance' do
+      @response.class.should == OpenStruct
+    end
+
+    should 'have price' do
+      @response.price.should be_close(@price, 1e-10)
+    end
+
+    should 'have country' do
+      @response.country.should == @country
+    end
+  end
+
+  context 'Response to check_number command with multiple phones' do
+
+    setup do
+      @phone = random_phone
+      @price = rand
+      @country = random_string
+      @hash = {
+        @phone => {
+          'price' => @price,
+          'country' => @country
+        }
+      }
+      @response = TextMagic::API::Response.check_number(@hash, false)
+    end
+
+    should 'be a hash' do
+      @response.class.should == Hash
+    end
+
+    should 'have phones as keys' do
+      @response.keys.should == [@phone]
+    end
+
+    should 'contain OpenStruct instances' do
+      @response.values.first.class.should == OpenStruct
+    end
+
+    should 'have price for all phones' do
+      @response.values.first.price.should be_close(@price, 1e-10)
+    end
+
+    should 'have country for all phones' do
+      @response.values.first.country.should == @country
     end
   end
 end

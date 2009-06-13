@@ -61,6 +61,14 @@ module TextMagic
         response.unread = hash['unread']
         response
       end
+
+      def self.check_number(hash, single)
+        response = {}
+        hash.each do |phone, check_hash|
+          response[phone] = OpenStruct.new(check_hash)
+        end
+        single ? response.values.first : response
+      end
     end
   end
 end
