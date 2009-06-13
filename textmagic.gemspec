@@ -2,11 +2,11 @@
 
 Gem::Specification.new do |s|
   s.name = %q{textmagic}
-  s.version = "0.3.2"
+  s.version = "0.3.3"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Vladim\303\255r Bobe\305\241 Tu\305\276insk\303\275"]
-  s.date = %q{2009-06-07}
+  s.date = %q{2009-06-13}
   s.default_executable = %q{tm}
   s.description = %q{
       textmagic is a Ruby interface to the TextMagic's Bulk SMS Gateway.
