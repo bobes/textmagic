@@ -1,6 +1,6 @@
-require 'rubygems'
-gem 'httparty'
-require 'httparty'
+require "rubygems"
+gem "httparty"
+require "httparty"
 %w[charset validation api response executor error].each do |lib|
   require File.join(File.dirname(__FILE__), lib)
 end

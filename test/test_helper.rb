@@ -1,14 +1,14 @@
-require 'rubygems'
-require 'test/unit'
-require 'shoulda'
-require 'mocha'
-require 'matchy'
-require 'fakeweb'
+require "rubygems"
+require "test/unit"
+require "shoulda"
+require "mocha"
+require "matchy"
+require "fakeweb"
 
-$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), '..', 'lib'))
+$LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require 'textmagic'
+require "textmagic"
 
 class Test::Unit::TestCase
 end
@@ -25,8 +25,4 @@ def random_hash
   hash = {}
   3.times { hash[random_string] = random_string }
   hash
-end
-
-def load_response(filename)
-  File.read(File.join(File.dirname(__FILE__), 'fixtures', filename) + '.json')
 end

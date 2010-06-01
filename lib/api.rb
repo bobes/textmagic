@@ -12,7 +12,7 @@ module TextMagic
     #
     # Example usage:
     #
-    #   api = TextMagic::API.new('fred', 'secret')
+    #   api = TextMagic::API.new("fred", "secret")
     def initialize(username, password)
       @username = username
       @password = password
@@ -30,7 +30,7 @@ module TextMagic
     #  api.account.balance
     #  # => 314.15
     def account
-      hash = Executor.execute('account', @username, @password)
+      hash = Executor.execute("account", @username, @password)
       TextMagic::API::Response.account(hash)
     end
 
@@ -58,28 +58,28 @@ module TextMagic
     #
     # Example usage:
     #
-    #  api.send('Hi Wilma', '999314159265')
-    #  # => '141421'
-    #  response = api.send('Hello everybody', '999314159265', '999271828182', :max_length => 2)
-    #  # => { '999314159265' => '141421', '999271828182' => '173205' }
+    #  api.send("Hi Wilma", "999314159265")
+    #  # => "141421"
+    #  response = api.send("Hello everybody", "999314159265", "999271828182", :max_length => 2)
+    #  # => { "999314159265" => "141421", "999271828182" => "173205" }
     #  response.parts_count
     #  # => 1
     #
     # Multiple phone numbers can be supplied as an array or as a list of arguments:
     #
-    #  api.send('Hello everybody', ['999314159265', '999271828182'])
-    #  api.send('Hello everybody', '999314159265', '999271828182')
+    #  api.send("Hello everybody", ["999314159265", "999271828182"])
+    #  api.send("Hello everybody", "999314159265", "999271828182")
     #
     # If you want to send a message to a single phone number but still
     # want to get a hash response, put the phone number in an array:
     #
-    #  api.send('Hi Barney', ['999271828182'])
+    #  api.send("Hi Barney", ["999271828182"])
     #
     # Postponed sending:
     #
-    #  api.send('Two hours later', '999314159265', :send_time => Time.now.to_i + 7200)
+    #  api.send("Two hours later", "999314159265", :send_time => Time.now.to_i + 7200)
     def send(text, *args)
-      raise Error.new(1, 'Message text is empty') if text.nil? || text.blank?
+      raise Error.new(1, "Message text is empty") if text.nil? || text.blank?
       options = args.last.is_a?(Hash) ? args.pop : {}
       unicode = API.is_unicode(text)
       options[:unicode] = case options[:unicode]
@@ -88,13 +88,13 @@ module TextMagic
       when nil then unicode ? 1 : 0
       else raise Error.new(10, "Wrong parameter value #{options[:unicode]} for parameter unicode")
       end
-      raise Error.new(6, 'Message contains invalid characters') if unicode && options[:unicode] == 0
-      raise Error.new(7, 'Message too long') unless API.validate_text_length(text, unicode)
+      raise Error.new(6, "Message contains invalid characters") if unicode && options[:unicode] == 0
+      raise Error.new(7, "Message too long") unless API.validate_text_length(text, unicode)
       single = args.size == 1 && args.first.is_a?(String)
       phones = args.flatten
-      raise Error.new(9, 'Invalid phone number format') unless API.validate_phones(phones)
+      raise Error.new(9, "Invalid phone number format") unless API.validate_phones(phones)
       options[:send_time] = options[:send_time].to_i if options[:send_time]
-      hash = Executor.execute('send', @username, @password, options.merge(:text => text, :phone => phones.join(',')))
+      hash = Executor.execute("send", @username, @password, options.merge(:text => text, :phone => phones.join(",")))
       TextMagic::API::Response.send(hash, single)
     end
 
@@ -111,37 +111,37 @@ module TextMagic
     #
     # Example usage:
     #
-    #  status = api.message_status('141421')
-    #  # => 'd'
+    #  status = api.message_status("141421")
+    #  # => "d"
     #  status.completed_time
     #  # => Fri May 22 10:10:18 +0200 2009
     #
     # Example with multiple ids:
     #
-    #  statuses = api.message_status('141421', '173205')
-    #  # => { '141421' => 'r', '173205' => 'd' }
-    #  statuses['141421'].text
-    #  # => 'Hi Wilma'
-    #  statuses['173205'].created_time
+    #  statuses = api.message_status("141421", "173205")
+    #  # => { "141421" => "r", "173205" => "d" }
+    #  statuses["141421"].text
+    #  # => "Hi Wilma"
+    #  statuses["173205"].created_time
     #  # => Thu May 28 16:41:45 +0200 2009
     #
     # Multiple ids can be supplied as an array or as a list of arguments:
     #
-    #  api.send('Hello everybody', ['999314159265', '999271828182'])
-    #  api.send('Hello everybody', '999314159265', '999271828182')
+    #  api.send("Hello everybody", ["999314159265", "999271828182"])
+    #  api.send("Hello everybody", "999314159265", "999271828182")
     #
     # If you want to request status for a single message but still want to get
     # a hash response, put the id in an array:
     #
-    #  api.message_status(['141421'])
+    #  api.message_status(["141421"])
     #
     # <b>It is strongly encouraged to setup callbacks to receive updates on message status
     # instead of using this method.</b>
     def message_status(*ids)
       single = ids.size == 1 && ids.first.is_a?(String)
       ids.flatten!
-      raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
-      hash = Executor.execute('message_status', @username, @password, :ids => ids.join(','))
+      raise TextMagic::API::Error.new(4, "Insufficient parameters") if ids.empty?
+      hash = Executor.execute("message_status", @username, @password, :ids => ids.join(","))
       TextMagic::API::Response.message_status(hash, single)
     end
     alias :status :message_status
@@ -162,20 +162,20 @@ module TextMagic
     # Example usage:
     #
     #  replies = api.receive
-    #  # => ['999271828182: Hello Fred', '999314159265: Good day']
+    #  # => ["999271828182: Hello Fred", "999314159265: Good day"]
     #  replies.first.text
-    #  # => 'Hello Fred'
+    #  # => "Hello Fred"
     #  replies.first.from
-    #  # => '999314159265'
+    #  # => "999314159265"
     #  replies.last.message_id
-    #  # => '223606'
-    #  api.receive '223606'
+    #  # => "223606"
+    #  api.receive "223606"
     #  # => []
     #
     # <b>It is strongly encouraged to setup callbacks to receive replies instead of
     # using this method.</b>
     def receive(last_retrieved_id = nil)
-      hash = Executor.execute('receive', @username, @password, :last_retrieved_id => last_retrieved_id)
+      hash = Executor.execute("receive", @username, @password, :last_retrieved_id => last_retrieved_id)
       TextMagic::API::Response.receive(hash)
     end
 
@@ -188,14 +188,14 @@ module TextMagic
     #
     # Example usage:
     #
-    #  api.delete_reply('141421')
-    #  api.delete_reply('173205', '223606')
-    #  api.delete_reply(['244948', '264575'])
+    #  api.delete_reply("141421")
+    #  api.delete_reply("173205", "223606")
+    #  api.delete_reply(["244948", "264575"])
     def delete_reply(*ids)
       single = ids.size == 1 && ids.first.is_a?(String)
       ids.flatten!
-      raise TextMagic::API::Error.new(4, 'Insufficient parameters') if ids.empty?
-      Executor.execute('delete_reply', @username, @password, :ids => ids.join(','))
+      raise TextMagic::API::Error.new(4, "Insufficient parameters") if ids.empty?
+      Executor.execute("delete_reply", @username, @password, :ids => ids.join(","))
       true
     end
     alias :delete :delete_reply
@@ -212,34 +212,34 @@ module TextMagic
     #
     # Example usage:
     #
-    #  check = api.check_number('447624800500')
+    #  check = api.check_number("447624800500")
     #  check.price
     #  # => 0.8
     #  check.country
-    #  # => 'GB'
+    #  # => "GB"
     #
     # Example with multiple phone numbers:
     #
-    #  check = api.check_number('447624800500', '61428102137')
-    #  check['447624800500'].price
+    #  check = api.check_number("447624800500", "61428102137")
+    #  check["447624800500"].price
     #  # => 0.8
-    #  check['61428102137'].country
-    #  # => 'AU'
+    #  check["61428102137"].country
+    #  # => "AU"
     #
     # Multiple phone number can be supplied as an array or as a list of arguments:
     #
-    #  api.check_number(['447624800500', '61428102137'])
-    #  api.check_number('447624800500', '61428102137')
+    #  api.check_number(["447624800500", "61428102137"])
+    #  api.check_number("447624800500", "61428102137")
     #
     # If you want to check a single phone number but still want to get
     # a hash response, put the number in an array:
     #
-    #  api.check_number(['447624800500'])
+    #  api.check_number(["447624800500"])
     def check_number(*phones)
       single = phones.size == 1 && phones.first.is_a?(String)
       phones.flatten!
-      raise TextMagic::API::Error.new(4, 'Insufficient parameters') if phones.empty?
-      hash = Executor.execute('check_number', @username, @password, :phone => phones.join(','))
+      raise TextMagic::API::Error.new(4, "Insufficient parameters") if phones.empty?
+      hash = Executor.execute("check_number", @username, @password, :phone => phones.join(","))
       TextMagic::API::Response.check_number(hash, single)
     end
     alias :check :check_number
