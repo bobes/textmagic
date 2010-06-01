@@ -1,9 +1,11 @@
-require 'rubygems'
-require 'rake'
-require 'sdoc'
+require "rubygems"
+require "rake"
+require "yaml"
+require "rake/testtask"
+require "rake/rdoctask"
 
 begin
-  require 'jeweler'
+  require "jeweler"
   Jeweler::Tasks.new do |gem|
     gem.name = "textmagic"
     gem.summary = %Q{Ruby interface to the TextMagic's Bulk SMS Gateway}
@@ -15,12 +17,12 @@ begin
     }
     gem.email = "vladimir.tuzinsky@gmail.com"
     gem.homepage = "http://github.com/bobes/textmagic"
-    gem.authors = ["Vladimír Bobeš Tužinský"]
+    gem.authors = ["Vladim\303\255r Bobe\305\241 Tu\305\276insk\303\275"]
     gem.rubyforge_project = "textmagic"
-    gem.add_runtime_dependency "httparty", ">= 0.4.3"
-    gem.add_development_dependency "mocha", ">= 0.9.5"
-    gem.add_development_dependency "fakeweb", ">= 1.2.2"
-    gem.add_development_dependency "jeremymcanally-matchy", ">= 0.1.0"
+    gem.add_runtime_dependency "httparty", ">= 0.5.2"
+    gem.add_development_dependency "mocha", ">= 0.9.8"
+    gem.add_development_dependency "fakeweb", ">= 1.2.8"
+    gem.add_development_dependency "mcmire-matchy", ">= 0.5.2"
   end
 
   Jeweler::RubyforgeTasks.new
@@ -28,18 +30,18 @@ rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: sudo gem install jeweler"
 end
 
-require 'rake/testtask'
 Rake::TestTask.new(:test) do |test|
-  test.libs << 'lib' << 'test'
-  test.pattern = 'test/**/*_test.rb'
+  test.libs << "lib" << "test"
+  test.pattern = "test/**/test_*.rb"
   test.verbose = true
 end
+task :default => :test
 
 begin
-  require 'rcov/rcovtask'
+  require "rcov/rcovtask"
   Rcov::RcovTask.new do |test|
-    test.libs << 'test'
-    test.pattern = 'test/**/*_test.rb'
+    test.libs << "test"
+    test.pattern = "test/**/test_*.rb"
     test.verbose = true
   end
 rescue LoadError
@@ -48,13 +50,9 @@ rescue LoadError
   end
 end
 
-
-task :default => :test
-
-require 'rake/rdoctask'
 Rake::RDocTask.new do |rdoc|
-  if File.exist?('VERSION.yml')
-    config = YAML.load(File.read('VERSION.yml'))
+  if File.exist?("VERSION.yml")
+    config = YAML.load(File.read("VERSION.yml"))
     version = "#{config[:major]}.#{config[:minor]}.#{config[:patch]}"
   else
     version = ""
@@ -88,7 +86,7 @@ task :doc => :rerdoc do
   git push origin gh-pages
   EOS
 
-  system cmd.split(/\n\s*/).join(' && ')
+  system cmd.split(/\n\s*/).join(" && ")
 
   system <<-EOS
   echo 'Checking out master'

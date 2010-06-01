@@ -83,9 +83,9 @@ module TextMagic
       options = args.last.is_a?(Hash) ? args.pop : {}
       unicode = API.is_unicode(text)
       options[:unicode] = case options[:unicode]
-      when 1, true: 1
-      when 0, false: 0
-      when nil: unicode ? 1 : 0
+      when 1, true then 1
+      when 0, false then 0
+      when nil then unicode ? 1 : 0
       else raise Error.new(10, "Wrong parameter value #{options[:unicode]} for parameter unicode")
       end
       raise Error.new(6, 'Message contains invalid characters') if unicode && options[:unicode] == 0

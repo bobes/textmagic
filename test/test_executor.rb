@@ -36,7 +36,7 @@ class ExecutorTest < Test::Unit::TestCase
 
     should 'send a POST request to proper uri' do
       response = random_string
-      FakeWeb.register_uri(:post, @uri, :string => response)
+      FakeWeb.register_uri(:post, @uri, :body => response)
       TextMagic::API::Executor.execute(@command, @username, @password, @options)
     end
 
@@ -56,7 +56,7 @@ class ExecutorTest < Test::Unit::TestCase
 
     should 'raise an error if the response contains error_code' do
       response = "{error_code:#{1 + rand(10)}}"
-      FakeWeb.register_uri(:post, @uri, :string => response)
+      FakeWeb.register_uri(:post, @uri, :body => response)
       lambda {
         TextMagic::API::Executor.execute(@command, @username, @password, @options)
       }.should raise_error(TextMagic::API::Error)
@@ -64,7 +64,7 @@ class ExecutorTest < Test::Unit::TestCase
 
     should 'return a hash with values from the response' do
       hash = random_hash
-      FakeWeb.register_uri(:post, @uri, :string => hash.to_json)
+      FakeWeb.register_uri(:post, @uri, :body => hash.to_json)
       response = TextMagic::API::Executor.execute(@command, @username, @password, @options)
       response.should == hash
     end

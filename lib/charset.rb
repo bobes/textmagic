@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 module TextMagic
 
   class API
@@ -21,7 +23,7 @@ module TextMagic
       end
 
       def real_length(text, unicode)
-        text.size + (unicode ? 0 : text.scan(/[\{\}\\\~\[\]\|\€]/).size)
+        text.size + (unicode ? 0 : text.scan(/[\{\}\\~\[\]\|€]/).size)
       end
     end
   end
