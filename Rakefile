@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "rubygems"
 require "rake"
 require "yaml"
@@ -17,7 +19,7 @@ begin
     }
     gem.email = "vladimir.tuzinsky@gmail.com"
     gem.homepage = "http://github.com/bobes/textmagic"
-    gem.authors = ["Vladim\303\255r Bobe\305\241 Tu\305\276insk\303\275"]
+    gem.authors = ["Vladimír Bobeš Tužinský"]
     gem.rubyforge_project = "textmagic"
     gem.add_runtime_dependency "httparty", ">= 0.5.2"
     gem.add_development_dependency "mocha", ">= 0.9.8"

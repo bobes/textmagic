@@ -145,8 +145,8 @@ to all of the gem's features. Run
 
 from your console to see help on its usage.
 
-<i>Note: This has only been tested on a Mac. If you have any troubles using this
-utility, contact the author (or submit a patch).</i>
+<i>Note: This has only been tested on a Mac with Ruby 1.8.7 and 1.9.1. If you have any troubles
+using this gem, contact the author (or submit a patch).</i>
 
 == Copyright
 
