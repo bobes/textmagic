@@ -33,11 +33,11 @@ module TextMagic
         hash.each do |message_id, message_hash|
           status = message_hash["status"].dup
           metaclass = class << status; self; end
-          metaclass.send :attr_accessor, :text, :credits_cost, :reply_number, :message_status, :created_time, :completed_time
+          metaclass.send :attr_accessor, :text, :credits_cost, :reply_number, :status, :created_time, :completed_time
           status.text = message_hash["text"]
           status.credits_cost = message_hash["credits_cost"]
           status.reply_number = message_hash["reply_number"]
-          status.message_status = message_hash["message_status"]
+          status.status = message_hash["status"]
           status.created_time = Time.at(message_hash["created_time"].to_i) if message_hash["created_time"]
           status.completed_time = Time.at(message_hash["completed_time"].to_i) if message_hash["completed_time"]
           response[message_id] = status

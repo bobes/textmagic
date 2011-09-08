@@ -120,6 +120,10 @@ class ResponseTest < Test::Unit::TestCase
     should "have credits_cost" do
       @response.credits_cost.should be_close(@credits_cost, 1e-10)
     end
+
+    should "have status" do
+      @response.status.should == @status
+    end
   end
 
   context "Response to message_status command with multiple ids" do
@@ -170,6 +174,10 @@ class ResponseTest < Test::Unit::TestCase
 
     should "have reply_number for all statuses" do
       @response.values.first.reply_number.should == @reply_number
+    end
+
+    should "have status for all statuses" do
+      @response.values.first.status.should == @status
     end
 
     should "have credits_cost for all statuses" do
