@@ -34,27 +34,27 @@ class ExecutorTest < Test::Unit::TestCase
     end
 
     should "send a POST request to proper uri" do
-      response = random_string
+      response = "{}"
       FakeWeb.register_uri(:post, @uri, :body => response)
       TextMagic::API::Executor.execute(@command, @username, @password, @options)
     end
 
-    should "not send parameters with empty keys" do
-      options_with_empty_values = @options.merge(nil => random_string, "" => random_string)
+    should "not send parameters with nil keys" do
+      options_with_empty_values = @options.merge(nil => random_string)
       @options.merge!(:username => @username, :password => @password, :cmd => @command)
       TextMagic::API::Executor.expects(:post).with("/api", :body => @options, :format => :json)
       TextMagic::API::Executor.execute(@command, @username, @password, options_with_empty_values)
     end
 
-    should "not send parameters with empty values" do
-      options_with_empty_values = @options.merge(random_string => nil, random_string => "")
+    should "not send parameters with nil values" do
+      options_with_empty_values = @options.merge(random_string => nil)
       @options.merge!(:username => @username, :password => @password, :cmd => @command)
       TextMagic::API::Executor.expects(:post).with("/api", :body => @options, :format => :json)
       TextMagic::API::Executor.execute(@command, @username, @password, options_with_empty_values)
     end
 
     should "raise an error if the response contains error_code" do
-      response = "{error_code:#{1 + rand(10)}}"
+      response = "{\"error_code\":#{1 + rand(10)}}"
       FakeWeb.register_uri(:post, @uri, :body => response)
       lambda {
         TextMagic::API::Executor.execute(@command, @username, @password, @options)

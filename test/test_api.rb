@@ -95,8 +95,8 @@ class APITest < Test::Unit::TestCase
       lambda { @api.send(@text, random_string) }.should raise_error(TextMagic::API::Error)
     end
 
-    should "raise an error if text is empty" do
-      lambda { @api.send("", @phone) }.should raise_error(TextMagic::API::Error)
+    should "raise an error if text is nil" do
+      lambda { @api.send(nil, @phone) }.should raise_error(TextMagic::API::Error)
     end
 
     should "raise an error if text is too long" do

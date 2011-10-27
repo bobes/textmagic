@@ -79,7 +79,7 @@ module TextMagic
     #
     #  api.send("Two hours later", "999314159265", :send_time => Time.now.to_i + 7200)
     def send(text, *args)
-      raise Error.new(1, "Message text is empty") if text.nil? || text.blank?
+      raise Error.new(1, "Message text is empty") unless text
       options = args.last.is_a?(Hash) ? args.pop : {}
       unicode = API.is_unicode(text)
       options[:unicode] = case options[:unicode]

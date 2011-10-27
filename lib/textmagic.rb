@@ -1,9 +1,8 @@
-require "rubygems"
-gem "httparty"
 require "httparty"
-%w[charset validation api response executor error].each do |lib|
-  require File.join(File.dirname(__FILE__), lib)
+
+%w[charset validation api response executor error version].each do |lib|
+  require File.join(File.dirname(__FILE__), "textmagic", lib)
 end
 
-module TextMagic #:nodoc:
+module Textmagic
 end
