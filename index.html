@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>TextMagic by bobes</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/respond.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <!--[if lt IE 8]>
+    <link rel="stylesheet" href="stylesheets/ie.css">
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+      <div id="header">
+        <nav>
+          <li class="fork"><a href="https://github.com/bobes/textmagic">View On GitHub</a></li>
+          <li class="downloads"><a href="https://github.com/bobes/textmagic/zipball/master">ZIP</a></li>
+          <li class="downloads"><a href="https://github.com/bobes/textmagic/tarball/master">TAR</a></li>
+          <li class="title">DOWNLOADS</li>
+        </nav>
+      </div><!-- end header -->
+
+    <div class="wrapper">
+
+      <section>
+        <div id="title">
+          <h1>TextMagic</h1>
+          <p>Ruby interface to the TextMagic Bulk SMS Gateway</p>
+          <hr>
+          <span class="credits left">Project maintained by <a href="https://github.com/bobes">bobes</a></span>
+          <span class="credits right">Hosted on GitHub Pages &mdash; Theme by <a href="http://twitter.com/#!/michigangraham">mattgraham</a></span>
+        </div>
+
+        <h1>TextMagic</h1>
+
+<p><code>textmagic</code> gem is a Ruby interface to the <a href="http://www.textmagic.com">TextMagic</a>
+Bulk SMS Gateway.
+It can be used to easily integrate SMS features into your application.
+It supports sending messages, receiving replies and more. You need to have
+a valid <a href="http://www.textmagic.com">TextMagic</a> account to use this gem.</p>
+
+<p>To learn more about the TextMagic Bulk SMS Gateway, visit the official
+<a href="http://api.textmagic.com">API documentation</a>
+or <a href="http://groups.google.com/group/textmagic-api">Google group</a>.</p>
+
+<p>This document will give you a good overview of the gem's functionality. For
+more information consult the detailed <a href="http://tuzinsky.com/textmagic/rdoc/">documentation</a>.</p>
+
+<h2>Basic usage</h2>
+
+<p>First create an API instance with your credentials:</p>
+
+<pre><code>api = TextMagic::API.new(username, password)
+</code></pre>
+
+<p>These credentials will be used in all requests to the SMS gateway.</p>
+
+<h3>Account balance</h3>
+
+<p>Check your account's balance:</p>
+
+<pre><code>api.account.balance
+# =&gt; 314.15
+</code></pre>
+
+<h3>Sending messages</h3>
+
+<p>To send a message to a single phone number, run:</p>
+
+<pre><code>api.send 'Hi Wilma!', '999314159265'
+</code></pre>
+
+<p>You can even specify multiple phone numbers:</p>
+
+<pre><code>api.send 'Hello everybody', '999314159265', '999271828182'
+</code></pre>
+
+<p>Unicode messages are supported as well:</p>
+
+<pre><code>api.send 'Вильма Привет!', '999314159265'
+</code></pre>
+
+<p>Long messages will be split to up to 3 parts. To limit maximum number
+of parts, specify an optional <code>max_length</code> parameter:</p>
+
+<pre><code>api.send 'Very very long message...', '999314159265', :max_length =&gt; 2
+</code></pre>
+
+<p>If you want to postpone message delivery, specify a <code>send_time</code> parameter:</p>
+
+<pre><code>api.send 'Two hours later', '999314159265', :send_time =&gt; Time.now.to_i + 7200
+</code></pre>
+
+<h3>Checking sent message status</h3>
+
+<p>If you want to check sent message status, you have to use <code>message_id</code>
+returned in response to <code>send</code> command.</p>
+
+<pre><code>api.send('Hi Wilma!', '999314159265')
+# =&gt; '141421'
+status = api.message_status('141421')
+# =&gt; 'd'
+status.completed_time
+# =&gt; Fri May 22 10:10:18 +0200 2009
+</code></pre>
+
+<p>You can also check statuses of several messages at once, in which case
+you'll get a hash with message ids as keys:</p>
+
+<pre><code>api.send('Hi Wilma!', '999314159265', '999271828182').message_id
+# =&gt; { '999314159265' =&gt; '141421', '999271828182' =&gt; '173205' }
+statuses = api.message_status('141421', '173205')
+# =&gt; { '141421' =&gt; 'r', '173205' =&gt; 'd' }
+statuses['173205'].created_time
+# =&gt; Thu May 28 16:41:45 +0200 2009
+</code></pre>
+
+<p><strong>It is strongly recommended to setup callbacks to receive updates on message status
+instead of using this method. Learn more about callbacks at
+<a href="http://api.textmagic.com/https-api">TextMagic API</a> site</strong></p>
+
+<h3>Receiving replies</h3>
+
+<p>To receive all available replies, run:</p>
+
+<pre><code>replies = api.receive
+# =&gt; ['999271828182: Hello Fred!', '999314159265: Good day!']
+replies.first.text
+# =&gt; 'Hello Fred!'
+replies.last.from
+# =&gt; '999314159265'
+replies.last.message_id
+# =&gt; '178082'
+</code></pre>
+
+<p>To prevent receiving old replies again, supply <code>last_retrieved_id</code> argument:</p>
+
+<pre><code>api.receive('178082')
+# =&gt; []
+</code></pre>
+
+<p><strong>It is strongly recommended to setup callbacks to receive replies instead of
+using this method. Learn more about callbacks at
+<a href="http://api.textmagic.com/https-api">TextMagic API</a> site</strong></p>
+
+<h3>Deleting retrieved replies</h3>
+
+<p>After you retrieve replies, you can delete them from server by running:</p>
+
+<pre><code>api.delete_reply '141421', '178082'
+# =&gt; true
+</code></pre>
+
+<h2>Command-line utility</h2>
+
+<p>The <code>textmagic</code> gem also features a handy command-line utility. It gives you access
+to all of the gem's features. Run</p>
+
+<pre><code>tm
+</code></pre>
+
+<p>from your console to see help on its usage.</p>
+
+<p><em>Note: This has only been tested on a Mac with Ruby 1.8.7 and 1.9.1. If you have any troubles using this gem, contact the author (or submit a patch).</em></p>
+
+<h2>Copyright</h2>
+
+<p>Copyright (c) 2009-2012 Vladimír Bobeš Tužinský. See LICENSE for details.</p>
+      </section>
+
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><!--<![endif]-->
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-1584061-7");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+  </body>
+</html>
