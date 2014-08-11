@@ -1,11 +1,10 @@
 module TextMagic
-
   class API
 
     class Executor
 
       include HTTParty
-      base_uri "http://www.textmagic.com/app"
+      base_uri "https://www.textmagic.com/app"
 
       # Executes a command by sending a request to the TextMagic's Bulk
       # SMS gateway. This is a low-level generic method used by methods
