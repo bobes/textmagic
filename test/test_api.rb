@@ -2,12 +2,12 @@
 
 require "test_helper"
 
-class APITest < Test::Unit::TestCase
+class APITest < Minitest::Test
 
   context "Initialization" do
 
     should "require username and password" do
-      lambda { TextMagic::API.new }.should raise_error(ArgumentError)
+      assert_raises(ArgumentError){ TextMagic::API.new }
       TextMagic::API.new(random_string, random_string)
     end
   end
@@ -31,7 +31,7 @@ class APITest < Test::Unit::TestCase
     should "call Response.account method to process the response hash" do
       processed_response = rand
       TextMagic::API::Response.expects(:account).with(@response).returns(processed_response)
-      @api.account.should == processed_response
+      assert_equal(@api.account, processed_response)
     end
   end
 
@@ -77,31 +77,31 @@ class APITest < Test::Unit::TestCase
 
     should "raise an error if unicode is set to 0 and text contains characters outside of GSM 03.38 charset" do
       text = "Вильма Привет"
-      lambda { @api.send(text, @phone, :unicode => false) }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.send(text, @phone, :unicode => false) }
     end
 
     should "raise an error if unicode value is not valid" do
-      lambda { @api.send(@text, @phone, :unicode => 2 + rand(10)) }.should raise_error(TextMagic::API::Error)
-      lambda { @api.send(@text, @phone, :unicode => random_string) }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.send(@text, @phone, :unicode => 2 + rand(10)) }
+      assert_raises(TextMagic::API::Error){ @api.send(@text, @phone, :unicode => random_string) }
     end
 
     should "raise an error if no phone numbers are specified" do
-      lambda { @api.send(@text) }.should raise_error(TextMagic::API::Error)
-      lambda { @api.send(@text, []) }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.send(@text) }
+      assert_raises(TextMagic::API::Error){ @api.send(@text, []) }
     end
 
     should "raise an error if format of any of the specified phone numbers is invalid" do
       TextMagic::API.expects(:validate_phones).returns(false)
-      lambda { @api.send(@text, random_string) }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.send(@text, random_string) }
     end
 
     should "raise an error if text is nil" do
-      lambda { @api.send(nil, @phone) }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.send(nil, @phone) }
     end
 
     should "raise an error if text is too long" do
       TextMagic::API.expects(:validate_text_length).returns(false)
-      lambda { @api.send(@text, @phone) }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.send(@text, @phone) }
     end
 
     should "support send_time option" do
@@ -119,14 +119,14 @@ class APITest < Test::Unit::TestCase
     should "call Response.send method to process the response hash (single phone)" do
       processed_response = rand
       TextMagic::API::Response.expects(:send).with(@response, true).returns(processed_response)
-      @api.send(@text, random_phone).should == processed_response
+      assert_equal(@api.send(@text, random_phone), processed_response)
     end
 
     should "call Response.send method to process the response hash (multiple phones)" do
       processed_response = rand
       TextMagic::API::Response.expects(:send).with(@response, false).returns(processed_response).twice
-      @api.send(@text, [random_phone]).should == processed_response
-      @api.send(@text, random_phone, random_phone).should == processed_response
+      assert_equal(@api.send(@text, [random_phone]), processed_response)
+      assert_equal(@api.send(@text, random_phone, random_phone), processed_response)
     end
   end
 
@@ -161,18 +161,18 @@ class APITest < Test::Unit::TestCase
 
     should "not call execute and should raise an exception if no ids are specified" do
       TextMagic::API::Executor.expects(:execute).never
-      lambda { @api.message_status }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.message_status }
     end
 
     should "call Response.message_status method to process the response hash (single id)" do
       TextMagic::API::Response.expects(:message_status).with(@response, true).returns(@processed_response)
-      @api.message_status(random_string).should == @processed_response
+      assert_equal(@api.message_status(random_string) ,@processed_response)
     end
 
     should "call Response.message_status method to process the response hash (multiple ids)" do
       TextMagic::API::Response.expects(:message_status).with(@response, false).returns(@processed_response).twice
-      @api.message_status([random_string]).should == @processed_response
-      @api.message_status(random_string, random_string).should == @processed_response
+      assert_equal(@api.message_status([random_string]) ,@processed_response)
+      assert_equal(@api.message_status(random_string, random_string) ,@processed_response)
     end
   end
 
@@ -200,7 +200,7 @@ class APITest < Test::Unit::TestCase
 
     should "call Response.receive method to process the response hash" do
       TextMagic::API::Response.expects(:receive).with(@response).returns(@processed_response)
-      @api.receive(random_string).should == @processed_response
+      assert_equal(@api.receive(random_string), @processed_response)
     end
   end
 
@@ -235,11 +235,11 @@ class APITest < Test::Unit::TestCase
 
     should "not call execute and should raise an exception if no ids are specified" do
       TextMagic::API::Executor.expects(:execute).never
-      lambda { @api.delete_reply }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.delete_reply }
     end
 
     should "return true" do
-      @api.delete_reply(random_string).should == true
+      assert_equal(@api.delete_reply(random_string), true)
     end
   end
 
@@ -274,18 +274,18 @@ class APITest < Test::Unit::TestCase
 
     should "not call execute and should raise an exception if no phones are specified" do
       TextMagic::API::Executor.expects(:execute).never
-      lambda { @api.check_number }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ @api.check_number}
     end
 
     should "call Response.check_number method to process the response hash (single phone)" do
       TextMagic::API::Response.expects(:check_number).with(@response, true).returns(@processed_response)
-      @api.check_number(random_string).should == @processed_response
+      assert_equal(@api.check_number(random_string), @processed_response)
     end
 
     should "call Response.check_number method to process the response hash (mulitple phones)" do
       TextMagic::API::Response.expects(:check_number).with(@response, false).returns(@processed_response).twice
-      @api.check_number([random_string]).should == @processed_response
-      @api.check_number(random_string, random_string).should == @processed_response
+      assert_equal(@api.check_number([random_string]), @processed_response)
+      assert_equal(@api.check_number(random_string, random_string), @processed_response)
     end
   end
 end

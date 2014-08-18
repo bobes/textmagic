@@ -1,17 +1,16 @@
-require "rubygems"
-require "test/unit"
-require "shoulda"
-require "mocha"
-require "matchy"
-require "fakeweb"
+require 'rubygems'
+require 'pry'
+require 'minitest/autorun'
+require 'shoulda'
+require 'mocha/mini_test'
+require 'fakeweb'
+
+
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 $LOAD_PATH.unshift(File.dirname(__FILE__))
 
-require "textmagic"
-
-class Test::Unit::TestCase
-end
+require 'textmagic'
 
 def random_string(legth = 5 + rand(10))
   Array.new(legth) { rand(36).to_s(36) }.join

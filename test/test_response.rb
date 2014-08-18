@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ResponseTest < Test::Unit::TestCase
+class ResponseTest < Minitest::Test
 
   context "Response to account command" do
 
@@ -11,11 +11,11 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "be an OpenStruct instance" do
-      @response.class.should == OpenStruct
+      assert_equal(@response.class, OpenStruct)
     end
 
     should "have balance" do
-      @response.balance.should be_close(@balance, 1e-10)
+      assert_in_delta @response.balance, (@balance), 1e-10
     end
   end
 
@@ -30,15 +30,15 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "equal to the message_id" do
-      @response.should == @message_id
+      assert_equal(@response, @message_id)
     end
 
     should "have sent_text" do
-      @response.sent_text.should == @text
+      assert_equal(@response.sent_text, @text)
     end
 
     should "have parts_count" do
-      @response.parts_count.should == @parts_count
+      assert_equal(@response.parts_count, @parts_count)
     end
   end
 
@@ -54,24 +54,24 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "be a hash" do
-      @response.class.should == Hash
+      assert_equal(@response.class, Hash)
     end
 
     should "have phone numbers as keys" do
-      @response.keys.sort.should == [@phone1, @phone2].sort
+      assert_equal(@response.keys.sort, [@phone1, @phone2].sort)
     end
 
     should "have message ids as values" do
-      @response[@phone1].should == @message_id1
-      @response[@phone2].should == @message_id2
+      assert_equal(@response[@phone1], @message_id1)
+      assert_equal(@response[@phone2], @message_id2)
     end
 
     should "have sent_text" do
-      @response.sent_text.should == @text
+      assert_equal(@response.sent_text, @text)
     end
 
     should "have parts_count" do
-      @response.parts_count.should == @parts_count
+      assert_equal( @response.parts_count, @parts_count)
     end
   end
 
@@ -98,31 +98,31 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "equal to the message status" do
-      @response.should == @status
+      assert_equal(@response, @status)
     end
 
     should "have text" do
-      @response.text.should == @text
+      assert_equal(@response.text, @text)
     end
 
     should "have created_time" do
-      @response.created_time.should == Time.at(@created_time)
+      assert_equal(@response.created_time, Time.at(@created_time))
     end
 
     should "have completed_time" do
-      @response.completed_time.should == Time.at(@completed_time)
+      assert_equal(@response.completed_time, Time.at(@completed_time))
     end
 
     should "have reply_number" do
-      @response.reply_number.should == @reply_number
+      assert_equal(@response.reply_number, @reply_number)
     end
 
     should "have credits_cost" do
-      @response.credits_cost.should be_close(@credits_cost, 1e-10)
+      assert_in_delta @response.credits_cost, (@credits_cost), 1e-10
     end
 
     should "have status" do
-      @response.status.should == @status
+      assert_equal(@response.status, @status)
     end
   end
 
@@ -149,39 +149,39 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "be a hash" do
-      @response.class.should == Hash
+      assert_equal(@response.class, Hash)
     end
 
     should "have message_ids as keys" do
-      @response.keys.should == ["141421"]
+      assert_equal(@response.keys, ["141421"])
     end
 
     should "contain statuses" do
-      @response.values.first.should == @status
+      assert_equal(@response.values.first, @status)
     end
 
     should "have text for all statuses" do
-      @response.values.first.text.should == @text
+      assert_equal(@response.values.first.text, @text)
     end
 
     should "have created_time for all statuses" do
-      @response.values.first.created_time.should == Time.at(@created_time)
+      assert_equal(@response.values.first.created_time, Time.at(@created_time))
     end
 
     should "have completed_time for all statuses" do
-      @response.values.first.completed_time.should == Time.at(@completed_time)
+      assert_equal(@response.values.first.completed_time, Time.at(@completed_time))
     end
 
     should "have reply_number for all statuses" do
-      @response.values.first.reply_number.should == @reply_number
+      assert_equal(@response.values.first.reply_number, @reply_number)
     end
 
     should "have status for all statuses" do
-      @response.values.first.status.should == @status
+      assert_equal(@response.values.first.status, @status)
     end
 
     should "have credits_cost for all statuses" do
-      @response.values.first.credits_cost.should be_close(@credits_cost, 1e-10)
+      assert_in_delta @response.values.first.credits_cost, (@credits_cost), 1e-10
     end
   end
 
@@ -202,31 +202,31 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "have unread" do
-      @response.unread.should == @unread
+      assert_equal(@response.unread, @unread)
     end
 
     should "be an array" do
-      @response.class.should == Array
+      assert_equal(@response.class, Array)
     end
 
     should "contain strings with phones numbers and texts" do
-      @response.first.should == "#{@phone}: #{@text}"
+      assert_equal(@response.first, "#{@phone}: #{@text}")
     end
 
     should "have timestamp for all messages" do
-      @response.first.timestamp.should == Time.at(@timestamp)
+      assert_equal(@response.first.timestamp, Time.at(@timestamp))
     end
 
     should "have from for all messages" do
-      @response.first.from.should == @phone
+      assert_equal(@response.first.from, @phone)
     end
 
     should "have text for all messages" do
-      @response.first.text.should == @text
+      assert_equal(@response.first.text, @text)
     end
 
     should "have message_id for all messages" do
-      @response.first.message_id.should == @message_id
+      assert_equal(@response.first.message_id, @message_id)
     end
   end
 
@@ -246,15 +246,15 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "be an OpenStruct instance" do
-      @response.class.should == OpenStruct
+      assert_equal(@response.class, OpenStruct)
     end
 
     should "have price" do
-      @response.price.should be_close(@price, 1e-10)
+      assert_in_delta @response.price, (@price), 1e-10
     end
 
     should "have country" do
-      @response.country.should == @country
+      assert_equal(@response.country, @country)
     end
   end
 
@@ -274,23 +274,23 @@ class ResponseTest < Test::Unit::TestCase
     end
 
     should "be a hash" do
-      @response.class.should == Hash
+      assert_equal(@response.class, Hash)
     end
 
     should "have phones as keys" do
-      @response.keys.should == [@phone]
+      assert_equal(@response.keys, [@phone])
     end
 
     should "contain OpenStruct instances" do
-      @response.values.first.class.should == OpenStruct
+      assert_equal(@response.values.first.class, OpenStruct)
     end
 
     should "have price for all phones" do
-      @response.values.first.price.should be_close(@price, 1e-10)
+      assert_in_delta @response.values.first.price, (@price), 1e-10
     end
 
     should "have country for all phones" do
-      @response.values.first.country.should == @country
+      assert_equal( @response.values.first.country, @country)
     end
   end
 end

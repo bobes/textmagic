@@ -1,7 +1,7 @@
 require "rubygems"
 require "rake"
 require "rake/testtask"
-require "rake/rdoctask"
+require "rdoc/task"
 
 Rake::TestTask.new(:test) do |test|
   test.libs << "lib" << "test"

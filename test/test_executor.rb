@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ExecutorTest < Test::Unit::TestCase
+class ExecutorTest < Minitest::Test
 
   context "execute method" do
 
@@ -9,28 +9,21 @@ class ExecutorTest < Test::Unit::TestCase
 
       @username, @password = random_string, random_string
       @command, @options = random_string, random_hash
-      @uri = "http://www.textmagic.com/app/api"
+      @uri = "https://www.textmagic.com/app/api"
     end
 
     should "not send HTTP request without command" do
-      TextMagic::API::Executor.expects(:post).never
-      lambda {
-        TextMagic::API::Executor.execute(nil, @username, @password, @options)
-      }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ TextMagic::API::Executor.execute(nil, @username, @password, @options) }
     end
 
     should "not send HTTP request without username" do
       TextMagic::API::Executor.expects(:post).never
-      lambda {
-        TextMagic::API::Executor.execute(@command, nil, @password, @options)
-      }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error) { TextMagic::API::Executor.execute(@command, nil, @password, @options) }
     end
 
     should "not send HTTP request without password" do
       TextMagic::API::Executor.expects(:post).never
-      lambda {
-        TextMagic::API::Executor.execute(@command, @username, nil, @options)
-      }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ TextMagic::API::Executor.execute(@command, @username, nil, @options) }
     end
 
     should "send a POST request to proper uri" do
@@ -56,16 +49,14 @@ class ExecutorTest < Test::Unit::TestCase
     should "raise an error if the response contains error_code" do
       response = "{\"error_code\":#{1 + rand(10)}}"
       FakeWeb.register_uri(:post, @uri, :body => response)
-      lambda {
-        TextMagic::API::Executor.execute(@command, @username, @password, @options)
-      }.should raise_error(TextMagic::API::Error)
+      assert_raises(TextMagic::API::Error){ TextMagic::API::Executor.execute(@command, @username, @password, @options) }
     end
 
     should "return a hash with values from the response" do
       hash = { "this" => "is", "just" => "a", "random" => "hash" }
       FakeWeb.register_uri(:post, @uri, :body => '{"this":"is","just":"a","random":"hash"}')
       response = TextMagic::API::Executor.execute(@command, @username, @password, @options)
-      response.should == hash
+      assert_equal(response.to_hash, hash)
     end
   end
 end

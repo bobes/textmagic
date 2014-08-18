@@ -1,6 +1,6 @@
 require "test_helper"
 
-class ErrorTest < Test::Unit::TestCase
+class ErrorTest < Minitest::Test
 
   context "Initialization" do
 
@@ -11,14 +11,14 @@ class ErrorTest < Test::Unit::TestCase
 
     should "accept a hash with error_code and error_message" do
       e = TextMagic::API::Error.new("error_code" => @code, "error_message" => @message)
-      e.code.should == @code
-      e.message.should == @message
+      assert_equal e.code, @code
+      assert_equal e.message, @message
     end
 
     should "accept error_code and error_message" do
       e = TextMagic::API::Error.new(@code, @message)
-      e.code.should == @code
-      e.message.should == @message
+      assert_equal e.code, @code
+      assert_equal e.message, @message
     end
   end
 end
