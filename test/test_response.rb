@@ -1,27 +1,27 @@
 require "test_helper"
 
-class ResponseTest < Test::Unit::TestCase
+describe "Response" do
 
-  context "Response to account command" do
+  describe "Response to account command" do
 
-    setup do
+    before do
       @balance = 0.1 * rand(1e4)
       @hash = { "balance" => @balance.to_s }
       @response = TextMagic::API::Response.account(@hash)
     end
 
-    should "be an OpenStruct instance" do
-      @response.class.should == OpenStruct
+    it "should be an OpenStruct instance" do
+      assert_kind_of OpenStruct, @response
     end
 
-    should "have balance" do
-      @response.balance.should be_close(@balance, 1e-10)
+    it "should have balance" do
+      assert_in_delta @response.balance, @balance, 1e-10
     end
   end
 
-  context "Response to send command with single phone number" do
+  describe "Response to send command with single phone number" do
 
-    setup do
+    before do
       @message_id, @phone = random_string, random_phone
       @text = random_string
       @parts_count = 1 + rand(3)
@@ -29,22 +29,22 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.send(@hash, true)
     end
 
-    should "equal to the message_id" do
-      @response.should == @message_id
+    it "should equal to the message_id" do
+      assert_equal @message_id, @response
     end
 
-    should "have sent_text" do
-      @response.sent_text.should == @text
+    it "should have sent_text" do
+      assert_equal @text, @response.sent_text
     end
 
-    should "have parts_count" do
-      @response.parts_count.should == @parts_count
+    it "should have parts_count" do
+      assert_equal @parts_count, @response.parts_count
     end
   end
 
-  context "Response to send command with multiple phone numbers" do
+  describe "Response to send command with multiple phone numbers" do
 
-    setup do
+    before do
       @message_id1, @phone1 = random_string, random_phone
       @message_id2, @phone2 = random_string, random_phone
       @text = random_string
@@ -53,31 +53,31 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.send(@hash, false)
     end
 
-    should "be a hash" do
-      @response.class.should == Hash
+    it "should be a hash" do
+      assert_kind_of Hash, @response
     end
 
-    should "have phone numbers as keys" do
-      @response.keys.sort.should == [@phone1, @phone2].sort
+    it "should have phone numbers as keys" do
+      assert_equal [@phone1, @phone2].sort, @response.keys.sort
     end
 
-    should "have message ids as values" do
-      @response[@phone1].should == @message_id1
-      @response[@phone2].should == @message_id2
+    it "should have message ids as values" do
+      assert_equal @message_id1, @response[@phone1]
+      assert_equal @message_id2, @response[@phone2]
     end
 
-    should "have sent_text" do
-      @response.sent_text.should == @text
+    it "should have sent_text" do
+      assert_equal @text, @response.sent_text
     end
 
-    should "have parts_count" do
-      @response.parts_count.should == @parts_count
+    it "should have parts_count" do
+      assert_equal @parts_count, @response.parts_count
     end
   end
 
-  context "Response to message_status command with single id" do
+  describe "Response to message_status command with single id" do
 
-    setup do
+    before do
       @text = random_string
       @status = random_string
       @reply_number = random_phone
@@ -97,38 +97,38 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.message_status(@hash, true)
     end
 
-    should "equal to the message status" do
-      @response.should == @status
+    it "should equal to the message status" do
+      assert_equal @status, @response
     end
 
-    should "have text" do
-      @response.text.should == @text
+    it "should have text" do
+      assert_equal @text, @response.text
     end
 
-    should "have created_time" do
-      @response.created_time.should == Time.at(@created_time)
+    it "should have created_time" do
+      assert_equal Time.at(@created_time), @response.created_time
     end
 
-    should "have completed_time" do
-      @response.completed_time.should == Time.at(@completed_time)
+    it "should have completed_time" do
+      assert_equal Time.at(@completed_time), @response.completed_time
     end
 
-    should "have reply_number" do
-      @response.reply_number.should == @reply_number
+    it "should have reply_number" do
+      assert_equal @reply_number, @response.reply_number
     end
 
-    should "have credits_cost" do
-      @response.credits_cost.should be_close(@credits_cost, 1e-10)
+    it "should have credits_cost" do
+      assert_in_delta @response.credits_cost, @credits_cost, 1e-10
     end
 
-    should "have status" do
-      @response.status.should == @status
+    it "should have status" do
+      assert_equal @status, @response.status
     end
   end
 
-  context "Response to message_status command with multiple ids" do
+  describe "Response to message_status command with multiple ids" do
 
-    setup do
+    before do
       @text = random_string
       @status = random_string
       @reply_number = random_phone
@@ -148,46 +148,46 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.message_status(@hash, false)
     end
 
-    should "be a hash" do
-      @response.class.should == Hash
+    it "should be a hash" do
+      assert_kind_of Hash, @response
     end
 
-    should "have message_ids as keys" do
-      @response.keys.should == ["141421"]
+    it "should have message_ids as keys" do
+      assert_equal ["141421"], @response.keys
     end
 
-    should "contain statuses" do
-      @response.values.first.should == @status
+    it "should contain statuses" do
+      assert_equal @status, @response.values.first
     end
 
-    should "have text for all statuses" do
-      @response.values.first.text.should == @text
+    it "should have text for all statuses" do
+      assert_equal @text, @response.values.first.text
     end
 
-    should "have created_time for all statuses" do
-      @response.values.first.created_time.should == Time.at(@created_time)
+    it "should have created_time for all statuses" do
+      assert_equal Time.at(@created_time), @response.values.first.created_time
     end
 
-    should "have completed_time for all statuses" do
-      @response.values.first.completed_time.should == Time.at(@completed_time)
+    it "should have completed_time for all statuses" do
+      assert_equal Time.at(@completed_time), @response.values.first.completed_time
     end
 
-    should "have reply_number for all statuses" do
-      @response.values.first.reply_number.should == @reply_number
+    it "should have reply_number for all statuses" do
+      assert_equal @reply_number, @response.values.first.reply_number
     end
 
-    should "have status for all statuses" do
-      @response.values.first.status.should == @status
+    it "should have status for all statuses" do
+      assert_equal @status, @response.values.first.status
     end
 
-    should "have credits_cost for all statuses" do
-      @response.values.first.credits_cost.should be_close(@credits_cost, 1e-10)
+    it "should have credits_cost for all statuses" do
+      assert_in_delta @response.values.first.credits_cost, @credits_cost, 1e-10
     end
   end
 
-  context "Response to receive command" do
+  describe "Response to receive command" do
 
-    setup do
+    before do
       @timestamp = (Time.now - 30).to_i
       @text, @phone, @message_id = random_string, random_phone, random_string
       @message = {
@@ -201,38 +201,38 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.receive(@hash)
     end
 
-    should "have unread" do
-      @response.unread.should == @unread
+    it "should have unread" do
+      assert_equal @unread, @response.unread
     end
 
-    should "be an array" do
-      @response.class.should == Array
+    it "should be an array" do
+      assert_kind_of Array, @response
     end
 
-    should "contain strings with phones numbers and texts" do
-      @response.first.should == "#{@phone}: #{@text}"
+    it "should contain strings with phones numbers and texts" do
+      assert_equal "#{@phone}: #{@text}", @response.first
     end
 
-    should "have timestamp for all messages" do
-      @response.first.timestamp.should == Time.at(@timestamp)
+    it "should have timestamp for all messages" do
+      assert_equal Time.at(@timestamp), @response.first.timestamp
     end
 
-    should "have from for all messages" do
-      @response.first.from.should == @phone
+    it "should have from for all messages" do
+      assert_equal @phone, @response.first.from
     end
 
-    should "have text for all messages" do
-      @response.first.text.should == @text
+    it "should have text for all messages" do
+      assert_equal @text, @response.first.text
     end
 
-    should "have message_id for all messages" do
-      @response.first.message_id.should == @message_id
+    it "should have message_id for all messages" do
+      assert_equal @message_id, @response.first.message_id
     end
   end
 
-  context "Response to check_number command with single phone" do
+  describe "Response to check_number command with single phone" do
 
-    setup do
+    before do
       @phone = random_phone
       @price = rand
       @country = random_string
@@ -245,22 +245,22 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.check_number(@hash, true)
     end
 
-    should "be an OpenStruct instance" do
-      @response.class.should == OpenStruct
+    it "should be an OpenStruct instance" do
+      assert_kind_of OpenStruct, @response
     end
 
-    should "have price" do
-      @response.price.should be_close(@price, 1e-10)
+    it "should have price" do
+      assert_in_delta @response.price, @price, 1e-10
     end
 
-    should "have country" do
-      @response.country.should == @country
+    it "should have country" do
+      assert_equal @country, @response.country
     end
   end
 
-  context "Response to check_number command with multiple phones" do
+  describe "Response to check_number command with multiple phones" do
 
-    setup do
+    before do
       @phone = random_phone
       @price = rand
       @country = random_string
@@ -273,24 +273,24 @@ class ResponseTest < Test::Unit::TestCase
       @response = TextMagic::API::Response.check_number(@hash, false)
     end
 
-    should "be a hash" do
-      @response.class.should == Hash
+    it "should be a hash" do
+      assert_kind_of Hash, @response
     end
 
-    should "have phones as keys" do
-      @response.keys.should == [@phone]
+    it "should have phones as keys" do
+      assert_equal [@phone], @response.keys
     end
 
-    should "contain OpenStruct instances" do
-      @response.values.first.class.should == OpenStruct
+    it "should contain OpenStruct instances" do
+      assert_kind_of OpenStruct, @response.values.first
     end
 
-    should "have price for all phones" do
-      @response.values.first.price.should be_close(@price, 1e-10)
+    it "should have price for all phones" do
+      assert_in_delta @response.values.first.price, @price, 1e-10
     end
 
-    should "have country for all phones" do
-      @response.values.first.country.should == @country
+    it "should have country for all phones" do
+      assert_equal  @response.values.first.country, @country
     end
   end
 end

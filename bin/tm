@@ -67,9 +67,9 @@ api = TextMagic::API.new(options['username'], options['password'])
 
 begin
   case command
-  when 'account':
+  when 'account'
     puts "Your account's balance: #{api.account.balance} credits"
-  when 'send':
+  when 'send'
     unless phones = ARGV.shift
       puts "Phone number(s) and message not specified. Use --help option to find out details"
       exit 1
@@ -84,7 +84,7 @@ begin
     response.each do |phone, message_id|
       puts "Message id (#{phone}): #{message_id}"
     end
-  when   'status':
+  when   'status'
     if ARGV.empty?
       puts "Message id(s) not specified. Use --help option to find out details"
       exit 1
@@ -92,13 +92,13 @@ begin
     api.status(ARGV).each do |message_id, status|
       puts "Status (#{message_id}): #{status}"
     end
-  when   'receive':
+  when   'receive'
     response = api.receive(ARGV.first)
     response.each do |message|
       puts "#{message} [#{message.message_id}, #{message.timestamp}]"
     end
     puts 'No new messages' if response.empty?
-  when   'delete':
+  when   'delete'
     api.delete(ARGV)
     puts 'Message(s) deleted'
   else

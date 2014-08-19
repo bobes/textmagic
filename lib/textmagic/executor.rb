@@ -1,5 +1,4 @@
 module TextMagic
-
   class API
 
     class Executor
