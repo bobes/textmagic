@@ -20,9 +20,9 @@ Gem::Specification.new do |gem|
   gem.require_paths = ["lib"]
   gem.version       = Textmagic::VERSION
 
-  gem.add_runtime_dependency "httparty", ">= 0.5.2"
-  gem.add_development_dependency "mocha", ">= 0.9.8"
-  gem.add_development_dependency "shoulda", ">= 2.10.3"
-  gem.add_development_dependency "fakeweb", ">= 1.2.8"
-  gem.add_development_dependency "mcmire-matchy", ">= 0.5.2"
+  gem.add_runtime_dependency "httparty", "~> 0.5"
+  gem.add_development_dependency "mocha", "~> 0.9"
+  gem.add_development_dependency "shoulda", "~> 2.10"
+  gem.add_development_dependency "fakeweb", "~> 1.2"
+  gem.add_development_dependency "mcmire-matchy", "~> 0.5"
 end
