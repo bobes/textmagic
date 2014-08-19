@@ -122,9 +122,10 @@ to all of the gem's features. Run
 
 from your console to see help on its usage.
 
-*Note: This has only been tested on a Mac with Ruby 1.8.7 and 1.9.1. If you have any troubles using this gem, contact the author (or submit a patch).*
+*Note: This gem has been tested with Ruby versions 1.9.3 to 2.1.2.
+If you have any troubles using this gem, contact the author (or submit a patch).*
 
 
 ## Copyright
 
-Copyright (c) 2009-2012 Vladimír Bobeš Tužinský. See LICENSE for details.
+Copyright (c) 2009-2014 Vladimír Bobeš Tužinský. See LICENSE for details.
