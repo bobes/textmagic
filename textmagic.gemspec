@@ -21,8 +21,4 @@ Gem::Specification.new do |gem|
   gem.version       = Textmagic::VERSION
 
   gem.add_runtime_dependency "httparty", "~> 0.5"
-  gem.add_development_dependency "mocha", "~> 1"
-  gem.add_development_dependency "minitest", "~> 5"
-  gem.add_development_dependency "fakeweb", "~> 1"
-  gem.add_development_dependency "mcmire-matchy", "~> 0.5"
 end
