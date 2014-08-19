@@ -1,24 +1,24 @@
 require "test_helper"
 
-class ErrorTest < Minitest::Test
+describe "Error" do
 
-  context "Initialization" do
+  describe "Initialization" do
 
-    setup do
+    before do
       @code = rand(1e3)
       @message = random_string
     end
 
-    should "accept a hash with error_code and error_message" do
+    it "should accept a hash with error_code and error_message" do
       e = TextMagic::API::Error.new("error_code" => @code, "error_message" => @message)
-      assert_equal e.code, @code
-      assert_equal e.message, @message
+      assert_equal @code, e.code
+      assert_equal @message, e.message
     end
 
-    should "accept error_code and error_message" do
+    it "should accept error_code and error_message" do
       e = TextMagic::API::Error.new(@code, @message)
-      assert_equal e.code, @code
-      assert_equal e.message, @message
+      assert_equal @code, e.code
+      assert_equal @message, e.message
     end
   end
 end
