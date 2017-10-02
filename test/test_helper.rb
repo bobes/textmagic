@@ -21,4 +21,8 @@ class Minitest::Test
     test_name = "test_#{name.gsub(/\s+/,'_')}".to_sym
     define_method(test_name, &block)
   end
+
 end
+
+require "webmock/minitest"
+WebMock.disable_net_connect!

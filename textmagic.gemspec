@@ -19,6 +19,4 @@ Gem::Specification.new do |gem|
   gem.name          = "textmagic"
   gem.require_paths = ["lib"]
   gem.version       = Textmagic::VERSION
-
-  gem.add_runtime_dependency "httparty", "~> 0.5"
 end

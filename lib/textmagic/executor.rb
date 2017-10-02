@@ -1,10 +1,12 @@
+require "net/http"
+
 module TextMagic
+
   class API
 
-    class Executor
+    module Executor
 
-      include HTTParty
-      base_uri "https://www.textmagic.com/app"
+      module_function
 
       # Executes a command by sending a request to the TextMagic's Bulk
       # SMS gateway. This is a low-level generic method used by methods
@@ -18,15 +20,20 @@ module TextMagic
       # Returns a hash with values parsed from the server"s response if
       # the command was successfully executed. In case the server replies
       # with error, this method raises a TextMagic::API::Error.
-      def self.execute(command, username, password, options = {})
+      def execute(command, username, password, options = {})
         raise TextMagic::API::Error.new(3, "Command is undefined") unless command
         raise TextMagic::API::Error.new(5, "Invalid username & password combination") unless username && password
         options.merge!(:username => username, :password => password, :cmd => command)
         options.delete_if { |key, value| !key || !value }
-        response = self.post("/api", :body => options, :format => :json)
-        raise Error.new(response) if response && response["error_code"]
-        response
+        uri = URI("https://www.textmagic.com/app/api")
+        response = Net::HTTP.post_form(uri, options)
+        result = JSON.parse(response.body) if response.body
+        raise Error.new(response.body) if result && result["error_code"]
+        result
       end
+
     end
+
   end
+
 end
