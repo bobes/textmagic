@@ -1,44 +1,44 @@
 #!/usr/bin/env ruby
-require 'optparse'
+require "optparse"
 
-lib = File.join(File.dirname(__FILE__), '..', 'lib', 'textmagic')
+lib = File.join(File.dirname(__FILE__), "..", "lib", "textmagic")
 
 if File.exist?("#{lib}.rb")
   require lib
 else
-  require 'rubygems'
-  require 'textmagic'
+  require "rubygems"
+  require "textmagic"
 end
 
-filename = File.join(ENV['HOME'], '.textmagic')
+filename = File.join(ENV["HOME"], ".textmagic")
 options = YAML.load_file(filename) if File.exist?(filename)
 options ||= {}
 
 parser = OptionParser.new do |opts|
-  opts.banner = 'Usage:'
+  opts.banner = "Usage:"
   opts.separator " "
   opts.separator [
     "tm account",
-    'tm send PHONE[,PHONE2[,PHONE3 ...]] MESSAGE',
-    'tm status MESSAGE_ID',
-    'tm receive [LAST_RETREIVED_ID]',
-    'tm delete MESSAGE_ID [MESSAGE_ID2 [MESSAGE_ID3 ...]]'
+    "tm send PHONE[,PHONE2[,PHONE3 ...]] MESSAGE",
+    "tm status MESSAGE_ID",
+    "tm receive [LAST_RETREIVED_ID]",
+    "tm delete MESSAGE_ID [MESSAGE_ID2 [MESSAGE_ID3 ...]]",
   ]
 
   opts.separator " "
   opts.separator "Specific options:"
 
-  opts.on('-u', '--username USERNAME',
+  opts.on("-u", "--username USERNAME",
     "Specify your TextMagic API username (overrides ~/.textmagic setting)") do |username|
-    options['username'] = username
+    options["username"] = username
   end
 
-  opts.on('-p', '--password PASSWORD',
+  opts.on("-p", "--password PASSWORD",
     "Specify your TextMagic API password (overrides ~/.textmagic setting)") do |password|
-    options['password'] = password
+    options["password"] = password
   end
 
-  opts.on_tail('-h', '--help', "Show this message") do
+  opts.on_tail("-h", "--help", "Show this message") do
     puts opts
     exit
   end
@@ -53,38 +53,38 @@ end
 
 command = ARGV.shift
 
-unless options['username']
+unless options["username"]
   puts "Username not specified. Use --help option to find out details"
   exit 1
 end
 
-unless options['password']
+unless options["password"]
   puts "Password not specified. Use --help option to find out details"
   exit 1
 end
 
-api = TextMagic::API.new(options['username'], options['password'])
+api = TextMagic::API.new(options["username"], options["password"])
 
 begin
   case command
-  when 'account'
+  when "account"
     puts "Your account's balance: #{api.account.balance} credits"
-  when 'send'
-    unless phones = ARGV.shift
+  when "send"
+    unless (phones = ARGV.shift)
       puts "Phone number(s) and message not specified. Use --help option to find out details"
       exit 1
     end
-    if (text = ARGV.join(' ')).empty?
+    if (text = ARGV.join(" ")).empty?
       puts "Message not specified. Use --help option to find out details"
       exit 1
     end
-    response = api.send(text, phones.split(','))
+    response = api.send(text, phones.split(","))
     puts "Sent text: #{response.sent_text}"
     puts "Parts: #{response.parts_count}"
     response.each do |phone, message_id|
       puts "Message id (#{phone}): #{message_id}"
     end
-  when   'status'
+  when "status"
     if ARGV.empty?
       puts "Message id(s) not specified. Use --help option to find out details"
       exit 1
@@ -92,15 +92,15 @@ begin
     api.status(ARGV).each do |message_id, status|
       puts "Status (#{message_id}): #{status}"
     end
-  when   'receive'
+  when "receive"
     response = api.receive(ARGV.first)
     response.each do |message|
       puts "#{message} [#{message.message_id}, #{message.timestamp}]"
     end
-    puts 'No new messages' if response.empty?
-  when   'delete'
+    puts "No new messages" if response.empty?
+  when "delete"
     api.delete(ARGV)
-    puts 'Message(s) deleted'
+    puts "Message(s) deleted"
   else
     puts "Unknown command #{command}. Use --help option to find out details"
     exit 1

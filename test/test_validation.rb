@@ -75,11 +75,11 @@ describe "Validation" do
   describe "validate_phones method" do
 
     it "should return true if phone number consists of up to 15 digits" do
-      assert_equal true, TextMagic::API.validate_phones(rand(10 ** 15).to_s)
+      assert_equal true, TextMagic::API.validate_phones(rand(10**15).to_s)
     end
 
     it "should return false if phone number is longer than 15 digits" do
-      assert_equal false, TextMagic::API.validate_phones((10 ** 16 + rand(10 ** 15)).to_s)
+      assert_equal false, TextMagic::API.validate_phones((10**16 + rand(10**15)).to_s)
     end
 
     it "should return false if phone number contains non-digits" do
@@ -91,7 +91,8 @@ describe "Validation" do
     end
 
     it "should return true if all phone numbers in a list are valid" do
-      phone1, phone2 = rand(10 ** 15).to_s, rand(10 ** 15).to_s
+      phone1 = rand(10**15).to_s
+      phone2 = rand(10**15).to_s
       assert_equal true, TextMagic::API.validate_phones(phone1, phone2)
       assert_equal true, TextMagic::API.validate_phones([phone1, phone2])
     end
@@ -101,7 +102,7 @@ describe "Validation" do
     end
 
     it "should return false if format of any of phone numbers in a list is invalid" do
-      phone1 = rand(10 ** 15).to_s, rand(10 ** 15).to_s
+      phone1 = rand(10**15).to_s, rand(10**15).to_s
       phone2 = random_string
       assert_equal false, TextMagic::API.validate_phones(phone1, phone2)
       assert_equal false, TextMagic::API.validate_phones([phone1, phone2])

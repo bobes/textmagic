@@ -13,7 +13,8 @@ module TextMagic
       #  TextMagic::API::Error.new("error_code" => code, "error_message" => message)
       def initialize(*args)
         if args.first.is_a?(Hash)
-          @code, @message = args.first["error_code"], args.first["error_message"]
+          @code = args.first["error_code"]
+          @message = args.first["error_message"]
         else
           @code, @message = args
         end
@@ -22,6 +23,9 @@ module TextMagic
       def to_s
         "#{@message} (#{@code})"
       end
+
     end
+
   end
+
 end

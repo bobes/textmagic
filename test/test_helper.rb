@@ -6,7 +6,7 @@ def random_string(legth = 5 + rand(10))
 end
 
 def random_phone
-  rand(10 ** 12).to_s
+  rand(10**12).to_s
 end
 
 def random_hash
@@ -15,11 +15,15 @@ def random_hash
   hash
 end
 
-class Minitest::Test
+module Minitest
 
-  def self.it(name, &block)
-    test_name = "test_#{name.gsub(/\s+/,'_')}".to_sym
-    define_method(test_name, &block)
+  class Test
+
+    def self.it(name, &block)
+      test_name = "test_#{name.gsub(/\s+/, "_")}".to_sym
+      define_method(test_name, &block)
+    end
+
   end
 
 end

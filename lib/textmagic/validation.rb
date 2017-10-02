@@ -4,8 +4,8 @@ module TextMagic
 
     module Validation
 
-      MAX_LENGTH_GSM = [160, 306, 459]
-      MAX_LENGTH_UNICODE = [70, 134, 201]
+      MAX_LENGTH_GSM = [160, 306, 459].freeze
+      MAX_LENGTH_UNICODE = [70, 134, 201].freeze
 
       # Validates message text length. Returns +true+ if the text length is
       # within the limits for the unicode/parts combination, otherwise it
@@ -29,6 +29,9 @@ module TextMagic
         phones.each { |phone| return false unless phone =~ /^\d{1,15}$/ }
         true
       end
+
     end
+
   end
+
 end

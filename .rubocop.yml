@@ -1,0 +1,102 @@
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  TargetRubyVersion: 2.0
+
+Documentation:
+  Enabled: false
+
+Lint/EndAlignment:
+  EnforcedStyleAlignWith: variable
+
+Lint/LiteralInInterpolation:
+  Enabled: true
+
+Metrics/AbcSize:
+  Exclude:
+    - test/**/*
+
+Metrics/ClassLength:
+  Exclude:
+    - test/**/*
+
+Metrics/LineLength:
+  Max: 120
+  Exclude:
+    - test/**/*
+
+Metrics/MethodLength:
+  Exclude:
+    - test/**/*
+
+Layout/AlignParameters:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/CaseIndentation:
+  EnforcedStyle: end
+
+Layout/DotPosition:
+  EnforcedStyle: trailing
+
+Layout/EmptyLinesAroundBlockBody:
+  Enabled: false
+
+Layout/EmptyLinesAroundClassBody:
+  EnforcedStyle: empty_lines
+
+Layout/EmptyLinesAroundModuleBody:
+  EnforcedStyle: empty_lines
+
+Layout/FirstParameterIndentation:
+  EnforcedStyle: special_for_inner_method_call
+
+Layout/IndentArray:
+  EnforcedStyle: consistent
+
+Layout/IndentHash:
+  EnforcedStyle: consistent
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 2
+
+Layout/MultilineOperationIndentation:
+  EnforcedStyle: indented
+  IndentationWidth: 2
+
+Style/AutoResourceCleanup:
+  Enabled: true
+
+Style/DoubleNegation:
+  Enabled: false
+
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+Style/MethodCalledOnDoEndBlock:
+  Enabled: true
+
+Style/MethodCalledOnDoEndBlock:
+  Exclude:
+    - test/**/*
+
+Style/Send:
+  Enabled: true
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/StringMethods:
+  Enabled: true
+
+Style/SymbolArray:
+  Enabled: true
+
+Style/TrailingCommaInArguments:
+  EnforcedStyleForMultiline: comma
+
+Style/TrailingCommaInLiteral:
+  EnforcedStyleForMultiline: comma

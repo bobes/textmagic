@@ -22,7 +22,8 @@ describe "Response" do
   describe "Response to send command with single phone number" do
 
     before do
-      @message_id, @phone = random_string, random_phone
+      @message_id = random_string
+      @phone = random_phone
       @text = random_string
       @parts_count = 1 + rand(3)
       @hash = { "message_id" => { @message_id => @phone }, "sent_text" => @text, "parts_count" => @parts_count }
@@ -45,8 +46,10 @@ describe "Response" do
   describe "Response to send command with multiple phone numbers" do
 
     before do
-      @message_id1, @phone1 = random_string, random_phone
-      @message_id2, @phone2 = random_string, random_phone
+      @message_id1 = random_string
+      @phone1 = random_phone
+      @message_id2 = random_string
+      @phone2 = random_phone
       @text = random_string
       @parts_count = 1 + rand(3)
       @hash = { "message_id" => { @message_id1 => @phone1, @message_id2 => @phone2 }, "sent_text" => @text, "parts_count" => @parts_count }
@@ -91,8 +94,8 @@ describe "Response" do
           "created_time" => @created_time.to_s,
           "reply_number" => @reply_number,
           "completed_time" => @completed_time.to_s,
-          "credits_cost" => @credits_cost
-        }
+          "credits_cost" => @credits_cost,
+        },
       }
       @response = TextMagic::API::Response.message_status(@hash, true)
     end
@@ -142,8 +145,8 @@ describe "Response" do
           "created_time" => @created_time,
           "reply_number" => @reply_number,
           "completed_time" => @completed_time,
-          "credits_cost" => @credits_cost
-        }
+          "credits_cost" => @credits_cost,
+        },
       }
       @response = TextMagic::API::Response.message_status(@hash, false)
     end
@@ -189,12 +192,14 @@ describe "Response" do
 
     before do
       @timestamp = (Time.now - 30).to_i
-      @text, @phone, @message_id = random_string, random_phone, random_string
+      @text = random_string
+      @phone = random_phone
+      @message_id = random_string
       @message = {
         "timestamp" => @timestamp,
         "from" => @phone,
         "text" => @text,
-        "message_id" => @message_id
+        "message_id" => @message_id,
       }
       @unread = rand(1e4)
       @hash = { "unread" => @unread, "messages" => [@message] }
@@ -239,8 +244,8 @@ describe "Response" do
       @hash = {
         @phone => {
           "price" => @price,
-          "country" => @country
-        }
+          "country" => @country,
+        },
       }
       @response = TextMagic::API::Response.check_number(@hash, true)
     end
@@ -267,8 +272,8 @@ describe "Response" do
       @hash = {
         @phone => {
           "price" => @price,
-          "country" => @country
-        }
+          "country" => @country,
+        },
       }
       @response = TextMagic::API::Response.check_number(@hash, false)
     end

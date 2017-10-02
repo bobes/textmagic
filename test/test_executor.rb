@@ -5,8 +5,10 @@ describe "Executor" do
   describe "execute method" do
 
     before do
-      @username, @password = random_string, random_string
-      @command, @options = random_string, random_hash
+      @username = random_string
+      @password = random_string
+      @command = random_string
+      @options = random_hash
       @uri = "https://www.textmagic.com/app/api"
     end
 
@@ -35,7 +37,7 @@ describe "Executor" do
 
     it "should not send parameters with nil keys" do
       options_with_empty_values = @options.merge(nil => random_string)
-      @options.merge!(:username => @username, :password => @password, :cmd => @command)
+      @options.merge!(username: @username, password: @password, cmd: @command)
       WebMock.
         stub_request(:post, @uri).
         with(body: @options).
@@ -45,7 +47,7 @@ describe "Executor" do
 
     it "should not send parameters with nil values" do
       options_with_empty_values = @options.merge(random_string => nil)
-      @options.merge!(:username => @username, :password => @password, :cmd => @command)
+      @options.merge!(username: @username, password: @password, cmd: @command)
       WebMock.
         stub_request(:post, @uri).
         with(body: @options).

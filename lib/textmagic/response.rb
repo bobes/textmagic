@@ -4,21 +4,22 @@ module TextMagic
 
   class API
 
-    class Response
+    module Response
 
-      def self.account(hash)
+      module_function
+
+      def account(hash)
         response = OpenStruct.new(hash)
         response.balance = response.balance.to_f
-        response.balance = response.balance.to_i if response.balance % 1 == 0
+        response.balance = response.balance.to_i if (response.balance % 1).zero?
         response
       end
 
-      def self.send(hash, single)
-        response = nil
-        if single
-          response = hash["message_id"].keys.first.dup
+      def send(hash, single)
+        response = if single
+          hash["message_id"].keys.first.dup
         else
-          response = hash["message_id"].invert
+          hash["message_id"].invert
         end
         metaclass = class << response; self; end
         metaclass.send :attr_accessor, :sent_text, :parts_count, :message_id
@@ -28,7 +29,7 @@ module TextMagic
         response
       end
 
-      def self.message_status(hash, single)
+      def message_status(hash, single)
         response = {}
         hash.each do |message_id, message_hash|
           status = message_hash["status"].dup
@@ -45,7 +46,7 @@ module TextMagic
         single ? response.values.first : response
       end
 
-      def self.receive(hash)
+      def receive(hash)
         response = hash["messages"].collect do |message_hash|
           message = "#{message_hash["from"]}: #{message_hash["text"]}"
           metaclass = class << message; self; end
@@ -62,13 +63,16 @@ module TextMagic
         response
       end
 
-      def self.check_number(hash, single)
+      def check_number(hash, single)
         response = {}
         hash.each do |phone, check_hash|
           response[phone] = OpenStruct.new(check_hash)
         end
         single ? response.values.first : response
       end
+
     end
+
   end
+
 end

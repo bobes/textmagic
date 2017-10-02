@@ -23,12 +23,12 @@ module TextMagic
       def execute(command, username, password, options = {})
         raise TextMagic::API::Error.new(3, "Command is undefined") unless command
         raise TextMagic::API::Error.new(5, "Invalid username & password combination") unless username && password
-        options.merge!(:username => username, :password => password, :cmd => command)
+        options.merge!(username: username, password: password, cmd: command)
         options.delete_if { |key, value| !key || !value }
         uri = URI("https://www.textmagic.com/app/api")
         response = Net::HTTP.post_form(uri, options)
         result = JSON.parse(response.body) if response.body
-        raise Error.new(response.body) if result && result["error_code"]
+        raise Error, response.body if result && result["error_code"]
         result
       end
 

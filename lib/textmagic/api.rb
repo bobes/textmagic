@@ -88,13 +88,13 @@ module TextMagic
       when nil then unicode ? 1 : 0
       else raise Error.new(10, "Wrong parameter value #{options[:unicode]} for parameter unicode")
       end
-      raise Error.new(6, "Message contains invalid characters") if unicode && options[:unicode] == 0
+      raise Error.new(6, "Message contains invalid characters") if unicode && options[:unicode].zero?
       raise Error.new(7, "Message too long") unless API.validate_text_length(text, unicode)
       single = args.size == 1 && args.first.is_a?(String)
       phones = args.flatten
       raise Error.new(9, "Invalid phone number format") unless API.validate_phones(phones)
       options[:send_time] = options[:send_time].to_i if options[:send_time]
-      hash = Executor.execute("send", @username, @password, options.merge(:text => text, :phone => phones.join(",")))
+      hash = Executor.execute("send", @username, @password, options.merge(text: text, phone: phones.join(",")))
       TextMagic::API::Response.send(hash, single)
     end
 
@@ -141,10 +141,10 @@ module TextMagic
       single = ids.size == 1 && ids.first.is_a?(String)
       ids.flatten!
       raise TextMagic::API::Error.new(4, "Insufficient parameters") if ids.empty?
-      hash = Executor.execute("message_status", @username, @password, :ids => ids.join(","))
+      hash = Executor.execute("message_status", @username, @password, ids: ids.join(","))
       TextMagic::API::Response.message_status(hash, single)
     end
-    alias :status :message_status
+    alias status message_status
 
     # Executes a receive command by sending a request to the TextMagic's
     # SMS gateway.
@@ -175,7 +175,7 @@ module TextMagic
     # <b>It is strongly encouraged to setup callbacks to receive replies instead of
     # using this method.</b>
     def receive(last_retrieved_id = nil)
-      hash = Executor.execute("receive", @username, @password, :last_retrieved_id => last_retrieved_id)
+      hash = Executor.execute("receive", @username, @password, last_retrieved_id: last_retrieved_id)
       TextMagic::API::Response.receive(hash)
     end
 
@@ -192,13 +192,12 @@ module TextMagic
     #  api.delete_reply("173205", "223606")
     #  api.delete_reply(["244948", "264575"])
     def delete_reply(*ids)
-      single = ids.size == 1 && ids.first.is_a?(String)
       ids.flatten!
       raise TextMagic::API::Error.new(4, "Insufficient parameters") if ids.empty?
-      Executor.execute("delete_reply", @username, @password, :ids => ids.join(","))
+      Executor.execute("delete_reply", @username, @password, ids: ids.join(","))
       true
     end
-    alias :delete :delete_reply
+    alias delete delete_reply
 
     # Executes a check_number command by sending a request to the TextMagic's
     # SMS gateway.
@@ -239,9 +238,11 @@ module TextMagic
       single = phones.size == 1 && phones.first.is_a?(String)
       phones.flatten!
       raise TextMagic::API::Error.new(4, "Insufficient parameters") if phones.empty?
-      hash = Executor.execute("check_number", @username, @password, :phone => phones.join(","))
+      hash = Executor.execute("check_number", @username, @password, phone: phones.join(","))
       TextMagic::API::Response.check_number(hash, single)
     end
-    alias :check :check_number
+    alias check check_number
+
   end
+
 end
