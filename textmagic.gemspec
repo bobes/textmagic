@@ -2,7 +2,7 @@
 require File.expand_path("../lib/textmagic/version", __FILE__)
 
 Gem::Specification.new do |gem|
-  gem.authors       = ["Vladimir Bobes Tuzinsky"]
+  gem.authors       = ["Vladimír Bobeš Tužinský"]
   gem.email         = ["vladimir@tuzinsky.com"]
   gem.summary       = "Ruby interface to the TextMagic's Bulk SMS Gateway"
   gem.description   = "
@@ -11,12 +11,13 @@ Gem::Specification.new do |gem|
     It supports sending messages, receiving replies and more.
     You need to have a valid TextMagic account to use this gem. You can get one at http://www.textmagic.com.
   "
-  gem.homepage      = ""
+  gem.homepage      = "https://github.com/bobes/textmagic"
 
   gem.executables   = `git ls-files -- bin/*`.split("\n").map { |f| File.basename(f) }
   gem.files         = `git ls-files`.split("\n")
   gem.test_files    = `git ls-files -- {test,spec,features}/*`.split("\n")
   gem.name          = "textmagic"
+  gem.licenses      = ["MIT"]
   gem.require_paths = ["lib"]
   gem.version       = Textmagic::VERSION
 end
